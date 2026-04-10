@@ -26,7 +26,6 @@ public class Usuario implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
     private String senha;
 
     private Date dataCriacao;
