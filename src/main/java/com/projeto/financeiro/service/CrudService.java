@@ -8,11 +8,14 @@ public interface CrudService<Entity, Request, Response> {
 
     List<Response> listarTodos();
 
-
     Response buscarPorId(long id);
 
     Response atualizar(long id, Request dto);
 
     void inativar(long id);
+
+    void reativar(long id);
+
+    void removerDefinitivo(long id);
 
 }
