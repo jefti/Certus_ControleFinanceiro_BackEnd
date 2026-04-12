@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,7 +19,7 @@ import java.util.List;
 public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String nome;
 
@@ -28,9 +28,12 @@ public class Usuario implements UserDetails {
 
     private String senha;
 
-    private Date dataCriacao;
+    @Column(unique = true, nullable = false)
+    private String celular;
 
-    private Date dataInativacao;
+    private LocalDateTime dataCriacao;
+
+    private LocalDateTime dataInativacao;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Titulo> titulos;
