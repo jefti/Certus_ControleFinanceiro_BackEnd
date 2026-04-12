@@ -2,13 +2,11 @@ package com.projeto.financeiro.entity;
 
 import com.projeto.financeiro.entity.enums.TipoTitulo;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -17,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Titulo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +29,7 @@ public class Titulo {
     @Column(nullable = false)
     private LocalDate dataVencimento;
 
-    private LocalDate dataPagamento;
+    private LocalDateTime dataPagamento;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
