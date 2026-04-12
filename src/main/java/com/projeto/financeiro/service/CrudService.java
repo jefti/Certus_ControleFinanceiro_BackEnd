@@ -2,7 +2,7 @@ package com.projeto.financeiro.service;
 
 import java.util.List;
 
-public interface CrudService<Entity, Request, Response> {
+public interface CrudService<Request, Response> {
 
     Response criar(Request dto);
 
