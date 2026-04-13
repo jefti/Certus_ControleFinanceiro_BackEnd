@@ -35,4 +35,15 @@ public class UsuarioMapper {
                 .celular(request.celular())
                 .build();
     }
+
+    public void updateEntity(Usuario entity, UsuarioRequest request) {
+        if (entity == null || request == null) {
+            return;
+        }
+
+        entity.setNome(request.nome());
+        entity.setEmail(request.email());
+        entity.setSenha(request.senha());
+        entity.setCelular(request.celular());
+    }
 }

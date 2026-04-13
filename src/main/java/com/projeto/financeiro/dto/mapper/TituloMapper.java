@@ -37,4 +37,16 @@ public class TituloMapper {
                 .build();
 
     }
+
+    public void updateEntity(Titulo entity, TituloRequest request) {
+        if (entity == null || request == null) {
+            return;
+        }
+
+        entity.setDescricao(request.descricao());
+        entity.setValor(request.valor());
+        entity.setDataVencimento(request.dataVencimento());
+        entity.setDataPagamento(request.dataPagamento());
+        entity.setTipo(request.tipo());
+    }
 }
