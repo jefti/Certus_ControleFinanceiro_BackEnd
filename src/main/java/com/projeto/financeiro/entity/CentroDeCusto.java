@@ -16,6 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "centro_de_custo")
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
