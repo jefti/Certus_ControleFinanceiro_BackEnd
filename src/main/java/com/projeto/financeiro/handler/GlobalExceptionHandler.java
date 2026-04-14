@@ -67,15 +67,4 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleResourceNotFound(NotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
-                HttpStatus.NOT_FOUND.value(),
-                "Recurso não encontrado",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
 }
