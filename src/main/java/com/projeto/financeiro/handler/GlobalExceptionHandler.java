@@ -2,12 +2,14 @@ package com.projeto.financeiro.handler;
 
 import com.projeto.financeiro.exception.ApiError;
 import com.projeto.financeiro.exception.BadRequestException;
+import com.projeto.financeiro.exception.ConflictException;
 import com.projeto.financeiro.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +46,7 @@ public class GlobalExceptionHandler {
     // Para fins de log no console
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
-        ex.printStackTrace(); //
+        ex.printStackTrace();
         ApiError error = new ApiError(
                 LocalDateTime.now().format(formatter),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -53,5 +55,27 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(HttpClientErrorException.Conflict ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                LocalDateTime.now().format(formatter),
+                HttpStatus.CONFLICT.value(),
+                "Conflito de dados",
+                "O recurso que você está tentando criar ou atualizar já existe ou está em uso. Verifique os dados e tente novamente.",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                LocalDateTime.now().format(formatter),
+                HttpStatus.NOT_FOUND.value(),
+                "Recurso não encontrado",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

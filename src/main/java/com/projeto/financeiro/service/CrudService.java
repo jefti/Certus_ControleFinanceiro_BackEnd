@@ -14,8 +14,4 @@ public interface CrudService<Request, Response> {
 
     void inativar(long id);
 
-    void reativar(long id);
-
-    void removerDefinitivo(long id);
-
 }
