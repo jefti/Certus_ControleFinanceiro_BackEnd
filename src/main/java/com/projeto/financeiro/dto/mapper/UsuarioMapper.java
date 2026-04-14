@@ -3,10 +3,15 @@ package com.projeto.financeiro.dto.mapper;
 import com.projeto.financeiro.dto.request.UsuarioRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.entity.Usuario;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UsuarioMapper {
+
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioResponse toDto(Usuario entity) {
         if (entity == null) {
@@ -31,7 +36,7 @@ public class UsuarioMapper {
         return Usuario.builder()
                 .nome(request.nome())
                 .email(request.email())
-                .senha(request.senha()) // TODO: aplicar passwordEncoder.encode(request.senha()) no service antes de salvar.
+                .senha(passwordEncoder.encode(request.senha()))
                 .celular(request.celular())
                 .build();
     }
@@ -43,7 +48,9 @@ public class UsuarioMapper {
 
         entity.setNome(request.nome());
         entity.setEmail(request.email());
-        entity.setSenha(request.senha());
+        if (request.senha() != null && !request.senha().isBlank()) {
+            entity.setSenha(passwordEncoder.encode(request.senha()));
+        }
         entity.setCelular(request.celular());
     }
 }
