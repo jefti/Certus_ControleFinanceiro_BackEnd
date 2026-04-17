@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleRecursoNaoEncontrado(NotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest request) {
         ApiError error = new ApiError(
                 LocalDateTime.now().format(formatter),
                 HttpStatus.NOT_FOUND.value(),
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleNegocioException(BadRequestException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleBadRequestException(BadRequestException ex, HttpServletRequest request) {
         ApiError error = new ApiError(
                 LocalDateTime.now().format(formatter),
                 HttpStatus.BAD_REQUEST.value(),
