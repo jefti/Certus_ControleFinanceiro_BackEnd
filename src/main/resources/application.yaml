@@ -13,3 +13,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+  auth:
+    jwt:
+      secret: ${JWT_SECRET_KEY}
+    jwt-expiration: 3600000
