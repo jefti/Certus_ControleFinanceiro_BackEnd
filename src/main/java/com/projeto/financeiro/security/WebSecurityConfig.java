@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
     public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final UserDetailsSecurityServer userdetailssecurityserver;
 
     @Bean
@@ -35,7 +34,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager authManager = authenticationconfiguration.getAuthenticationManager();
+        AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
 
         http
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
