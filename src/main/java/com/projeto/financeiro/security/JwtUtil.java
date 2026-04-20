@@ -4,11 +4,11 @@ import com.projeto.financeiro.entity.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -20,8 +20,15 @@ import java.util.Date;
 public class JwtUtil {
     @Value("${auth.jwt.secret}")
     private String jwtSecret;
-    @Value("${auth.jwt-expiration}")
+    @Value("${auth.jwt.expiration}")
     private Long jwtExpirationMs;
+
+    @PostConstruct
+    public void validateJwtSecret() {
+        if (jwtSecret == null || jwtSecret.length() < 32) {
+            throw new IllegalStateException("JWT_SECRET_KEY deve ter pelo menos 32 caracteres");
+        }
+    }
 
     public String gerarToken(Authentication authentication) {
         Date dataExpircao = new Date(new Date().getTime() + jwtExpirationMs);
@@ -63,7 +70,6 @@ public class JwtUtil {
         return claims != null ? claims.getSubject() : null;
     }
 
-
     public boolean isValidToken(String token){
         Claims claims = getClaims(token);
         if (claims == null) {
@@ -74,6 +80,4 @@ public class JwtUtil {
         Date dataAtual = new Date(System.currentTimeMillis());
         return email != null && dataExpiracao != null && dataAtual.before(dataExpiracao);
     }
-
-
 }
