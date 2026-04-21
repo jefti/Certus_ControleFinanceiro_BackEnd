@@ -18,15 +18,15 @@ public class EmailService {
 
     public void enviarCodigoRecuperacao(String emailDestino, String codigo) {
         SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(mailFrom);
-            message.setTo(emailDestino);
-            message.setSubject("Código de recuperação de senha");
-            message.setText(
-                    "Olá!\n\n" +
-                    "Seu código de recuperação de senha é: " + codigo + "\n\n" +
-                    "Esse código expira em 15 minutos.\n\n" +
-                    "Se você não solicitou esta recuperação, ignore este email."
-            );
+        message.setFrom(mailFrom);
+        message.setTo(emailDestino);
+        message.setSubject("Código de recuperação de senha");
+        message.setText(
+                "Olá!\n\n" +
+                "Seu código de recuperação de senha é: " + codigo + "\n\n" +
+                "Esse código expira em 15 minutos.\n\n" +
+                "Se você não solicitou esta recuperação, ignore este email."
+        );
 
         javaMailSender.send(message);
     }
