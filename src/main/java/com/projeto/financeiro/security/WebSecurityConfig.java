@@ -54,6 +54,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/health").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
