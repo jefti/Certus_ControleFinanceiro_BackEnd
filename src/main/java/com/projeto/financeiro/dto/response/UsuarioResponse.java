@@ -1,13 +1,13 @@
 package com.projeto.financeiro.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record UsuarioResponse(
         Long id,
         String nome,
         String email,
         String celular,
-        LocalDateTime dataCadastro,
-        LocalDateTime dataInativacao
+        Instant dataCadastro,
+        Instant dataInativacao
 ) {
 }

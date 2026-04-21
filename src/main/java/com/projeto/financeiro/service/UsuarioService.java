@@ -11,7 +11,7 @@ import com.projeto.financeiro.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
         Usuario usuario = usuarioMapper.toEntity(dto);
         validarCadastro(usuario);
         if (usuario.getDataCriacao() == null) {
-            usuario.setDataCriacao(LocalDateTime.now());
+            usuario.setDataCriacao(Instant.now());
         }
 
         Usuario salvo = usuarioRepository.save(usuario);
@@ -72,7 +72,7 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
     public void inativar(long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> usuarioNaoEncontrado(id));
-        usuario.setDataInativacao(LocalDateTime.now());
+        usuario.setDataInativacao(Instant.now());
         usuarioRepository.save(usuario);
     }
 

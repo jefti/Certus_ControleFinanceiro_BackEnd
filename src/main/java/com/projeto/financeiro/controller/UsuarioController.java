@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,10 @@ public class UsuarioController {
 
     @PostMapping("/cadastrar")
     @Operation(summary = "Cadastrar usuario", description = "Cria um novo usuario na base de dados")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Usuario cadastrado com sucesso",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Email ou celular ja cadastrado", content = @Content)
-    })
+    @ApiResponse(responseCode = "201", description = "Usuario cadastrado com sucesso",
+            content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Email ou celular ja cadastrado", content = @Content)
     public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody UsuarioRequest usuarioRequest) {
         UsuarioResponse usuario = usuarioService.criar(usuarioRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -45,11 +42,9 @@ public class UsuarioController {
             description = "Retorna todos os usuarios cadastrados",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuarios retornados com sucesso",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UsuarioResponse.class)))),
-            @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
-    })
+    @ApiResponse(responseCode = "200", description = "Usuarios retornados com sucesso",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UsuarioResponse.class))))
+    @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
     public ResponseEntity<List<UsuarioResponse>> obterTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
@@ -60,12 +55,10 @@ public class UsuarioController {
             description = "Retorna os dados de um usuario especifico",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuario encontrado",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
-    })
+    @ApiResponse(responseCode = "200", description = "Usuario encontrado",
+            content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
     public ResponseEntity<UsuarioResponse> obterPorId(@PathVariable long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
@@ -76,14 +69,12 @@ public class UsuarioController {
             description = "Atualiza os dados de um usuario existente",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuario atualizado com sucesso",
-                    content = @Content(schema = @Schema(implementation = UsuarioResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Email ou celular ja cadastrado para outro usuario", content = @Content)
-    })
+    @ApiResponse(responseCode = "200", description = "Usuario atualizado com sucesso",
+            content = @Content(schema = @Schema(implementation = UsuarioResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes", content = @Content)
+    @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "Email ou celular ja cadastrado para outro usuario", content = @Content)
     public ResponseEntity<UsuarioResponse> atualizar(@PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuarioRequest));
     }
@@ -94,11 +85,9 @@ public class UsuarioController {
             description = "Realiza a inativacao logica de um usuario pelo id",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Usuario inativado com sucesso", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
-    })
+    @ApiResponse(responseCode = "204", description = "Usuario inativado com sucesso", content = @Content)
+    @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
     public ResponseEntity<Void> deletar(@PathVariable long id) {
         usuarioService.inativar(id);
         return ResponseEntity.noContent().build();

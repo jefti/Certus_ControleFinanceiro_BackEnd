@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class HealthController {
         HealthResponse response = new HealthResponse(
                 "UP",
                 "financeiro",
-                OffsetDateTime.now()
+                Instant.now()
         );
         return ResponseEntity.ok(response);
     }
