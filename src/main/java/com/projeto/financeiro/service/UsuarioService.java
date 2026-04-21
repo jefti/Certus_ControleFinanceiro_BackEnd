@@ -26,10 +26,7 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
 
     @Override
     public UsuarioResponse criar(UsuarioRequest dto) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(dto.email());
-        if (usuarioExistente.isPresent()) {
-            throw new ConflictException("Usuário com email " + dto.email() + " já existe.");
-        }
+        validateUniques(dto, null);
         Usuario usuario = usuarioMapper.toEntity(dto);
         validarCadastro(usuario);
         if (usuario.getDataCriacao() == null) {
@@ -59,6 +56,7 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
 
     @Override
     public UsuarioResponse atualizar(long id, UsuarioRequest dto) {
+        validateUniques(dto, id);
         return usuarioRepository.findById(id)
                 .map(usuarioExistente -> {
                     usuarioMapper.updateEntity(usuarioExistente, dto);
@@ -90,6 +88,22 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
         if (usuario.getCelular() == null || usuario.getCelular().isBlank()) faltantes.add("celular");
         if (!faltantes.isEmpty()) {
             throw new BadRequestException("Campos obrigatórios ausentes: " + String.join(", ", faltantes));
+        }
+    }
+
+    private void validateUniques(UsuarioRequest dto, Long id) {
+        Optional<Usuario> usuarioExistenteEmail = usuarioRepository.findByEmail(dto.email());
+        if (usuarioExistenteEmail.isPresent()) {
+            if (id == null || !usuarioExistenteEmail.get().getId().equals(id)) {
+                throw new ConflictException("Usuário com email " + dto.email() + " já existe.");
+            }
+        }
+
+        Optional<Usuario> usuarioExistenteCelular = usuarioRepository.findByCelular(dto.celular());
+        if (usuarioExistenteCelular.isPresent()) {
+            if (id == null || !usuarioExistenteCelular.get().getId().equals(id)) {
+                throw new ConflictException("Celular " + dto.celular() + " já existe na nossa base de dados.");
+            }
         }
     }
 
