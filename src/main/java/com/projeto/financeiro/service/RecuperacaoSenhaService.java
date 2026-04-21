@@ -37,7 +37,7 @@ public class RecuperacaoSenhaService {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(request.email());
 
         if (usuarioOptional.isEmpty()) {
-            throw new BadRequestException("Usuário não encontrado.");
+            throw new NotFoundException("Usuário não encontrado.");
         }
 
         Usuario usuario = usuarioOptional.get();
