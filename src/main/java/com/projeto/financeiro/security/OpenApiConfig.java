@@ -17,6 +17,13 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.projeto.financeiro.dto.request.LoginRequest;
+import com.projeto.financeiro.dto.response.LoginResponse;
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.oas.models.Components;
+import java.util.Map;
+
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Certus Controle Financeiro API", version = "v1", description = "Documentacao da API de controle financeiro"))
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT", in = SecuritySchemeIn.HEADER)
@@ -24,36 +31,43 @@ public class OpenApiConfig {
 
         @Bean
         public OpenAPI customOpenAPI() {
+
+                Map<String, Schema> loginRequestSchemas = ModelConverters.getInstance()
+                                .readAllAsResolvedSchema(new AnnotatedType(LoginRequest.class)).referencedSchemas;
+
+                Map<String, Schema> loginResponseSchemas = ModelConverters.getInstance()
+                                .readAllAsResolvedSchema(new AnnotatedType(LoginResponse.class)).referencedSchemas;
+
+                Components components = new Components();
+
+                loginRequestSchemas.forEach(components::addSchemas);
+                loginResponseSchemas.forEach(components::addSchemas);
+
                 return new OpenAPI()
-                        .path("/api/auth/login", new PathItem().post(
-                                new Operation()
-                                        .addTagsItem("Autenticação")
-                                        .summary("Realiza login do usuário")
-                                        .description("Autentica o usuário e retorna um token JWT")
-                                        .requestBody(new RequestBody()
-                                                .required(true)
-                                                .content(new Content().addMediaType(
-                                                        "application/json",
-                                                        new MediaType().schema(
-                                                                new Schema<>().$ref("#/components/schemas/LoginRequest")
-                                                        )
-                                                ))
-                                        )
-                                        .responses(new ApiResponses()
-                                                .addApiResponse("200", new ApiResponse()
-                                                                .description("Login realizado com sucesso")
-                                                                .content(new Content()
-                                                                                .addMediaType(
+                                .components(components)
+                                .path("/api/auth/login", new PathItem().post(
+                                                new Operation()
+                                                                .addTagsItem("Autenticacao")
+                                                                .summary("Realiza login do usuario")
+                                                                .description("Autentica o usuario e retorna um token JWT")
+                                                                .requestBody(new RequestBody()
+                                                                                .required(true)
+                                                                                .content(new Content().addMediaType(
                                                                                                 "application/json",
                                                                                                 new MediaType().schema(
                                                                                                                 new Schema<>().$ref(
-                                                                                                                                "#/components/schemas/LoginResponse")))))
-                                                .addApiResponse("401", new ApiResponse()
-                                                        .description("Credenciais inválidas")
-                                                )
-                                        )
-                                )
-                        );
+                                                                                                                                "#/components/schemas/LoginRequest")))))
+                                                                .responses(new ApiResponses()
+                                                                                .addApiResponse("200", new ApiResponse()
+                                                                                                .description("Login realizado com sucesso")
+                                                                                                .content(new Content()
+                                                                                                                .addMediaType(
+                                                                                                                                "application/json",
+                                                                                                                                new MediaType().schema(
+                                                                                                                                                new Schema<>().$ref(
+                                                                                                                                                                "#/components/schemas/LoginResponse")))))
+                                                                                .addApiResponse("401", new ApiResponse()
+                                                                                                .description("Credenciais inválidas")))));
 
         }
 
