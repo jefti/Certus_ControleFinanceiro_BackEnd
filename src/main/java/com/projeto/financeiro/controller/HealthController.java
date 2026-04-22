@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.Map;
 
 @RestController
 @Tag(name = "Health", description = "Verificação de integridade da aplicação")
