@@ -11,7 +11,7 @@ import com.projeto.financeiro.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,14 +26,11 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
 
     @Override
     public UsuarioResponse criar(UsuarioRequest dto) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByEmail(dto.email());
-        if (usuarioExistente.isPresent()) {
-            throw new ConflictException("Usuário com email " + dto.email() + " já existe.");
-        }
+        validateUniques(dto, null);
         Usuario usuario = usuarioMapper.toEntity(dto);
         validarCadastro(usuario);
         if (usuario.getDataCriacao() == null) {
-            usuario.setDataCriacao(LocalDateTime.now());
+            usuario.setDataCriacao(Instant.now());
         }
 
         Usuario salvo = usuarioRepository.save(usuario);
@@ -60,7 +57,8 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
     @Override
     public UsuarioResponse atualizar(long id, UsuarioRequest dto) {
         return usuarioRepository.findById(id)
-                .map(usuarioExistente -> {
+            .map(usuarioExistente -> {
+                    validateUniques(dto, id);
                     usuarioMapper.updateEntity(usuarioExistente, dto);
                     validarCadastro(usuarioExistente);
                     Usuario atualizado = usuarioRepository.save(usuarioExistente);
@@ -74,7 +72,7 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
     public void inativar(long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> usuarioNaoEncontrado(id));
-        usuario.setDataInativacao(LocalDateTime.now());
+        usuario.setDataInativacao(Instant.now());
         usuarioRepository.save(usuario);
     }
 
@@ -90,6 +88,22 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
         if (usuario.getCelular() == null || usuario.getCelular().isBlank()) faltantes.add("celular");
         if (!faltantes.isEmpty()) {
             throw new BadRequestException("Campos obrigatórios ausentes: " + String.join(", ", faltantes));
+        }
+    }
+
+    private void validateUniques(UsuarioRequest dto, Long id) {
+        Optional<Usuario> usuarioExistenteEmail = usuarioRepository.findByEmail(dto.email());
+        if (usuarioExistenteEmail.isPresent()) {
+            if (id == null || !usuarioExistenteEmail.get().getId().equals(id)) {
+                throw new ConflictException("Usuário com email " + dto.email() + " já existe.");
+            }
+        }
+
+        Optional<Usuario> usuarioExistenteCelular = usuarioRepository.findByCelular(dto.celular());
+        if (usuarioExistenteCelular.isPresent()) {
+            if (id == null || !usuarioExistenteCelular.get().getId().equals(id)) {
+                throw new ConflictException("Celular " + dto.celular() + " já existe na nossa base de dados.");
+            }
         }
     }
 

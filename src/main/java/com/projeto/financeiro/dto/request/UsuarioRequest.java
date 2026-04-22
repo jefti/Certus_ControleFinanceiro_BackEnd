@@ -6,4 +6,7 @@ public record UsuarioRequest(
         String senha,
         String celular
 ) {
+    public String telefone() {
+        return celular;
+    }
 }
