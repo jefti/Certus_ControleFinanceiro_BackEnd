@@ -56,9 +56,9 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
 
     @Override
     public UsuarioResponse atualizar(long id, UsuarioRequest dto) {
-        validateUniques(dto, id);
         return usuarioRepository.findById(id)
-                .map(usuarioExistente -> {
+            .map(usuarioExistente -> {
+                    validateUniques(dto, id);
                     usuarioMapper.updateEntity(usuarioExistente, dto);
                     validarCadastro(usuarioExistente);
                     Usuario atualizado = usuarioRepository.save(usuarioExistente);
