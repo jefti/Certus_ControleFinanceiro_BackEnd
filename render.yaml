@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: certus-controle-financeiro-backend
+    runtime: docker
+    plan: free
+    region: virginia
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: PASSWORD_RECOVERY_EXPIRATION_MINUTES
+        value: "15"
