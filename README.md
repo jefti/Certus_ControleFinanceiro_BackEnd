@@ -98,7 +98,7 @@ O objetivo é oferecer os endpoints necessários para:
 Crie um banco local para a aplicação. Exemplo:
 
 ```sql
-CREATE DATABASE radar_financeiro;
+CREATE DATABASE certus;
 ```
 
 ### Variáveis de Ambiente
@@ -108,11 +108,13 @@ O projeto utiliza configuração externa para dados sensíveis e conexão com o 
 Exemplo:
 
 ```env
-DATABASE_URL=jdbc:postgresql://localhost:5432/radar_financeiro
+DATABASE_URL=jdbc:postgresql://localhost:5432/certus
 DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=123
+DATABASE_PASSWORD=sua_senha
 JWT_SECRET_KEY=sua_chave_com_pelo_menos_32_caracteres
-JWT_EXPIRATION=3600000
+MAIL_FROM=onboarding@resend.dev
+RESEND_API_KEY=re_sua_chave_da_resend
+PASSWORD_RECOVERY_EXPIRATION_MINUTES=15
 ```
 
 Observação:
@@ -136,12 +138,38 @@ Por padrão, a API será disponibilizada localmente em:
 http://localhost:8080
 ```
 
+Em ambientes de deploy, a aplicação também aceita a porta definida pela variável de ambiente `PORT`.
+
+Documentação Swagger/OpenAPI:
+
+```text
+http://localhost:8080/swagger-ui.html
+http://localhost:8080/v3/api-docs
+```
+
+### Deploy com Docker
+
+Para gerar a imagem localmente:
+
+```bash
+docker build -t certus-financeiro-backend .
+```
+
+Para executar o container com variáveis de ambiente:
+
+```bash
+docker run --env-file .env -p 8080:8080 certus-financeiro-backend
+```
+
+Para deploy em provedores como Render, configure as variáveis de ambiente do serviço com os valores de banco, JWT, email e recuperação de senha.
+
 ## Configuração da Aplicação
 
 A configuração da API fica centralizada em `application.properties` ou `application.yaml`, com leitura de valores via ambiente para:
 
 - conexão com PostgreSQL
 - segurança JWT
+- envio de email via API HTTP
 - configurações de execução
 
 ## Endpoints Planejados
