@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +135,7 @@ class RecuperacaoSenhaServiceTest {
         user.setEmail(email);
         user.setSenha("encoded-password");
         user.setCelular("99999999999");
-        user.setDataCriacao(LocalDateTime.now());
+        user.setDataCriacao(Instant.now());
         return user;
     }
 
