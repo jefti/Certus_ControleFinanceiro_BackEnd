@@ -34,7 +34,9 @@ public class AuthController {
                     responseCode = "200",
                     description = "Solicitacao processada com sucesso",
                     content = @Content(schema = @Schema(implementation = SimpleMessageResponse.class))
-            )
+            ),
+            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content),
+            @ApiResponse(responseCode = "503", description = "Falha ao enviar email de recuperacao", content = @Content)
     })
     public ResponseEntity<SimpleMessageResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         return ResponseEntity.ok(recuperacaoSenhaService.solicitarRecuperacao(request));
@@ -52,7 +54,8 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = SimpleMessageResponse.class))
             ),
             @ApiResponse(responseCode = "400", description = "Codigo invalido ou expirado", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado", content = @Content),
+            @ApiResponse(responseCode = "503", description = "Falha no servico de email", content = @Content)
     })
     public ResponseEntity<SimpleMessageResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
         return ResponseEntity.ok(recuperacaoSenhaService.resetarSenha(request));

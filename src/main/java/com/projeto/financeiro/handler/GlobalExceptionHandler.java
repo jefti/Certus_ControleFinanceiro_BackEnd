@@ -3,6 +3,7 @@ package com.projeto.financeiro.handler;
 import com.projeto.financeiro.exception.ApiError;
 import com.projeto.financeiro.exception.BadRequestException;
 import com.projeto.financeiro.exception.ConflictException;
+import com.projeto.financeiro.exception.EmailDeliveryException;
 import com.projeto.financeiro.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(EmailDeliveryException.class)
+    public ResponseEntity<ApiError> handleEmailDeliveryException(EmailDeliveryException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                LocalDateTime.now().format(formatter),
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "Falha no envio de email",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
     // Para fins de log no console
