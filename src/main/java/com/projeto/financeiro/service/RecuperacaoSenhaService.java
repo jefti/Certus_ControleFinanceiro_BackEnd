@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.projeto.financeiro.dto.request.ForgotPasswordRequest;
 import com.projeto.financeiro.dto.request.ResetPasswordRequest;
@@ -33,6 +34,7 @@ public class RecuperacaoSenhaService {
     @Value("${app.password-recovery.expiration-minutes}")
     private long expirationMinutes;
 
+    @Transactional
     public SimpleMessageResponse solicitarRecuperacao(ForgotPasswordRequest request) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(request.email());
 

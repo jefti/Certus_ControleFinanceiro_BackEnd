@@ -1,6 +1,6 @@
 package com.projeto.financeiro.factory;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import com.projeto.financeiro.dto.request.UsuarioRequest;
@@ -39,7 +39,7 @@ public class UsuarioFactory {
         usuario.setEmail("user-" + suffix + "@email.com");
         usuario.setSenha("123456");
         usuario.setCelular(numericSuffix.substring(0, Math.min(numericSuffix.length(), 11)));
-        usuario.setDataCriacao(LocalDateTime.now());
+        usuario.setDataCriacao(Instant.now());
 
         return usuario;
     }
@@ -50,8 +50,8 @@ public class UsuarioFactory {
             String email,
             String senha,
             String celular,
-            LocalDateTime dataCriacao,
-            LocalDateTime dataInativacao
+            Instant dataCriacao,
+            Instant dataInativacao
     ) {
         Usuario usuario = new Usuario();
         usuario.setId(id);

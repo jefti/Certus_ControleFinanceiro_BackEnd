@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         when(usuarioRepository.findByEmail("johnDoe@email.com"))
@@ -74,7 +74,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         when(usuarioRepository.findByCelular("99999999999"))
@@ -106,7 +106,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "encoded-password",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         UsuarioResponse expectedResponse = new UsuarioResponse(
@@ -151,7 +151,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         UsuarioResponse expectedResponse = new UsuarioResponse(
@@ -191,7 +191,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         Usuario user2 = UsuarioFactory.buildUsuario(
@@ -200,7 +200,7 @@ class UsuarioServiceTest {
                 "janeDoe@email.com",
                 "123456",
                 "88888888888",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         UsuarioResponse response1 = new UsuarioResponse(
@@ -262,7 +262,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         Usuario anotherUser = UsuarioFactory.buildUsuario(
@@ -271,7 +271,7 @@ class UsuarioServiceTest {
                 "duplicated@email.com",
                 "123456",
                 "88888888888",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         when(usuarioRepository.findById(userId)).thenReturn(Optional.of(existingUser));
@@ -296,7 +296,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         Usuario anotherUser = UsuarioFactory.buildUsuario(
@@ -305,7 +305,7 @@ class UsuarioServiceTest {
                 "another@email.com",
                 "123456",
                 "77777777777",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         when(usuarioRepository.findById(userId)).thenReturn(Optional.of(existingUser));
@@ -325,7 +325,7 @@ class UsuarioServiceTest {
                 "johnDoe@email.com",
                 "123456",
                 "99999999999",
-                LocalDateTime.now(),
+                Instant.now(),
                 null);
 
         when(usuarioRepository.findById(userId)).thenReturn(Optional.of(existingUser));
