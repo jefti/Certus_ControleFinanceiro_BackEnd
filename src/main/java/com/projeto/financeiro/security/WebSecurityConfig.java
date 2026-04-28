@@ -3,6 +3,7 @@ package com.projeto.financeiro.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -23,6 +24,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Order(2)
 public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -56,8 +58,6 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/actuator/health",
-                        "/actuator/health/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
