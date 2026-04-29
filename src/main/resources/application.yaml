@@ -45,20 +45,31 @@ app:
       api-key: ${RESEND_API_KEY:}
   password-recovery:
     expiration-minutes: ${PASSWORD_RECOVERY_EXPIRATION_MINUTES}
-  actuator:
-    username: ${APP_ACTUATOR_USERNAME}
-    password: ${APP_ACTUATOR_PASSWORD}
 
 management:
+  server:
+    port: ${MANAGEMENT_PORT}
   endpoints:
     web:
       exposure:
-        include: health,prometheus
+        include: health,prometheus,info,logfile
   endpoint:
     health:
       probes:
         enabled: true
-      show-details: when-authorized
-    prometheus:
-      enabled: true
+      show-details: always
+    logfile:
+      external-file: logs/application.log
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: prometheus-grafana
 
+logging:
+  file:
+    name: logs/application.log
+  level:
+    root: INFO
