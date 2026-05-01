@@ -38,21 +38,15 @@ auth:
     secret: ${JWT_SECRET_KEY}
     expiration: 3600000
 
-actuator:
-  username: ${ACTUATOR_USERNAME}
-  password: ${ACTUATOR_PASSWORD}
-
 app:
   mail:
-    from: ${MAIL_FROM:onboarding@resend.dev}
+    from: ${MAIL_FROM}
     resend:
-      api-key: ${RESEND_API_KEY:}
+      api-key: ${RESEND_API_KEY}
   password-recovery:
     expiration-minutes: ${PASSWORD_RECOVERY_EXPIRATION_MINUTES}
 
 management:
-  server:
-    port: ${MANAGEMENT_PORT}
   endpoints:
     web:
       exposure:
