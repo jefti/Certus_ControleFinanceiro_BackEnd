@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientResponseException;
 import com.projeto.financeiro.exception.EmailDeliveryException;
 
 @Service
-public class EmailService {
+public class EmailService implements EmailProvider {
 
     private final RestClient restClient;
     private final String mailFrom;
@@ -34,6 +34,7 @@ public class EmailService {
                 .build();
     }
 
+    @Override
     public void enviarCodigoRecuperacao(String emailDestino, String codigo) {
         if (resendApiKey == null || resendApiKey.isBlank()) {
             throw new EmailDeliveryException("Servico de email nao configurado.");
@@ -70,7 +71,7 @@ public class EmailService {
         } catch (RestClientResponseException e) {
             throw new EmailDeliveryException("Falha ao enviar email de recuperacao.", e);
         } catch (RestClientException e) {
-            throw new EmailDeliveryException("Falha ao enviar email de recuperacao.", e);
+            throw new EmailDeliveryException("Erro de comunicacao com o servico de email.", e);
         }
     }
 
