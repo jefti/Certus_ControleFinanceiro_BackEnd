@@ -1,188 +1,239 @@
-# Certus Controle Financeiro — Back-end
+# 💰 Certus Controle Financeiro — Back-end
 
-[![Java](https://img.shields.io/badge/Java-17-007396?logo=java&logoColor=white)](https://openjdk.org/projects/jdk/17/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)]()
+#### *API REST para gestão financeira pessoal e corporativa*
 
-API REST do projeto **Certus Controle Financeiro**, responsável pelas regras de negócio, autenticação, persistência de dados e exposição dos endpoints consumidos pelo front-end.
+[![Java](https://img.shields.io/badge/Java-17-007396?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/17/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![JWT](https://img.shields.io/badge/JWT-secured-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
 
-> Este repositório contém apenas o **back-end**. O front-end está em [Certus Controle Financeiro — Front-end](https://github.com/jefti/Certus_ControleFinanceiro_FrontEnd).
-
----
-
-## Sumário
-
-- [Visão Geral](#visão-geral)
-- [Tecnologias](#tecnologias)
-- [Arquitetura](#arquitetura)
-- [Domínios e Funcionalidades](#domínios-e-funcionalidades)
-- [Pré-requisitos](#pré-requisitos)
-- [Configuração](#configuração)
-- [Execução Local](#execução-local)
-- [Execução com Docker Compose](#execução-com-docker-compose)
-- [Observabilidade](#observabilidade)
-- [Documentação da API](#documentação-da-api)
-- [Deploy](#deploy)
-- [Integração com o Front-end](#integração-com-o-front-end)
-- [Autores](#autores)
+[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=flat-square)]()
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)]()
+[![Build](https://img.shields.io/badge/build-maven-C71A36?style=flat-square&logo=apachemaven&logoColor=white)]()
 
 ---
 
-## Visão Geral
+## ✨ Sobre o projeto
 
-O back-end foi planejado para suportar o fluxo principal da aplicação financeira:
+**Certus Controle Financeiro** é uma plataforma de gestão financeira que centraliza o controle de **títulos a pagar e a receber**, **centros de custo** e oferece um **dashboard consolidado** com a saúde financeira do usuário.
 
-- Login e sessão de usuário
-- Cadastro de usuário
-- Recuperação de senha (via e-mail transacional)
-- Gerenciamento de dados do usuário
-- Cadastros das tabelas de domínio
-- Dashboard interativo com dados financeiros consolidados
+Este repositório contém a **API REST** que sustenta toda a aplicação — autenticação, regras de negócio, persistência e exposição dos endpoints consumidos pelo front-end.
 
-**Status:** projeto em desenvolvimento ativo. A API está estruturada em camadas para manter a separação entre entidades, regras de negócio, persistência e exposição dos endpoints.
+> 🎨 O front-end React + TypeScript vive em [**Certus_ControleFinanceiro_FrontEnd**](https://github.com/jefti/Certus_ControleFinanceiro_FrontEnd).
 
 ---
 
-## Tecnologias
+## 📑 Sumário
 
-| Categoria          | Stack                                                            |
-| ------------------ | ---------------------------------------------------------------- |
-| Linguagem          | Java 17                                                          |
-| Framework          | Spring Boot 3.5 (Web, Data JPA, Security, Actuator, DevTools)    |
-| Segurança          | Spring Security + JWT (jjwt 0.13)                                |
-| Persistência       | PostgreSQL 16, Flyway (migrations)                               |
-| Mapeamento         | ModelMapper, Lombok                                              |
-| Documentação       | Springdoc OpenAPI / Swagger UI                                   |
-| Observabilidade    | Spring Boot Actuator, Micrometer, Prometheus, Grafana            |
-| Build              | Maven, JaCoCo (cobertura de testes)                              |
-| Containerização    | Docker, Docker Compose                                           |
-| Configuração       | spring-dotenv (`.env`)                                           |
+- [Funcionalidades](#-funcionalidades)
+- [Stack & Tecnologias](#-stack--tecnologias)
+- [Arquitetura](#-arquitetura)
+- [Modelagem de Dados](#-modelagem-de-dados)
+- [Pré-requisitos](#-pré-requisitos)
+- [Configuração](#-configuração)
+- [Execução Local](#-execução-local)
+- [Execução com Docker Compose](#-execução-com-docker-compose)
+- [Observabilidade](#-observabilidade)
+- [Documentação da API](#-documentação-da-api)
+- [Deploy](#-deploy)
+- [Autores](#-autores)
 
 ---
 
-## Arquitetura
+## 🚀 Funcionalidades
 
-API em camadas, com responsabilidades bem separadas:
+| Domínio | Recursos |
+| --- | --- |
+| 🔐 **Autenticação** | Login com JWT, recuperação de senha por e-mail, expiração configurável |
+| 👤 **Usuários** | Cadastro, atualização, inativação lógica, perfil autenticado |
+| 💵 **Títulos** | CRUD de títulos a pagar/receber, controle de vencimento e pagamento |
+| 🏷️ **Centros de Custo** | Categorização de títulos (N:N), observações livres |
+| 📊 **Dashboard** | Indicadores financeiros consolidados por usuário |
+| 📖 **Documentação** | Swagger UI / OpenAPI 3 interativo |
+
+---
+
+## 🧰 Stack & Tecnologias
+
+| Camada | Tecnologias |
+| :---: | :--- |
+| **Linguagem** | Java 17 |
+| **Framework** | Spring Boot 3.5 — Web, Data JPA, Security, Actuator, DevTools |
+| **Segurança** | Spring Security 6 · JWT (jjwt 0.13) · BCrypt |
+| **Persistência** | PostgreSQL 16 · Hibernate · **Flyway** (migrations versionadas) |
+| **Mapeamento** | ModelMapper · Lombok |
+| **E-mail** | Resend API (templates transacionais) |
+| **Documentação** | Springdoc OpenAPI · Swagger UI |
+| **Observabilidade** | Spring Actuator · Micrometer · **Prometheus** · **Grafana** |
+| **Build & Qualidade** | Maven · JaCoCo (cobertura) |
+| **Containerização** | Docker · Docker Compose |
+| **Configuração** | spring-dotenv (`.env`) |
+
+### 📦 Principais dependências
+
+```xml
+spring-boot-starter-web          ┃ spring-boot-starter-data-jpa
+spring-boot-starter-security     ┃ spring-boot-starter-actuator
+flyway-core / flyway-postgresql  ┃ postgresql
+jjwt-api / jjwt-impl / jjwt-gson ┃ micrometer-registry-prometheus
+springdoc-openapi-starter-webmvc ┃ modelmapper
+spring-dotenv                    ┃ lombok
+```
+
+---
+
+## 🏛️ Arquitetura
+
+API estruturada em **camadas**, com responsabilidades claramente separadas e contratos bem definidos entre elas:
 
 ```
 src/main/java/com/projeto/financeiro
-├── controller     # Exposição dos endpoints REST
-├── service        # Regras de negócio
-├── repository     # Acesso a dados (Spring Data JPA)
-├── entity         # Modelo de domínio (JPA)
-├── dto            # Requests, responses e mappers
-├── security       # Configuração de segurança, filtros JWT, OpenAPI
-├── exception      # Exceções de negócio
-├── handler        # Tratamento global de exceções
-└── FinanceiroApplication.java
+├── 🎯 controller     → Endpoints REST e contratos HTTP
+├── ⚙️  service        → Regras de negócio
+├── 💾 repository     → Acesso a dados (Spring Data JPA)
+├── 🧱 entity         → Modelo de domínio (JPA / Hibernate)
+├── 🔁 dto            → Requests, responses e mappers
+├── 🛡️  security       → Filtros JWT, configurações Spring Security, OpenAPI
+├── ❗ exception      → Exceções de negócio tipadas
+├── 🧯 handler        → Tratamento global de erros (RFC 7807)
+└── 🚀 FinanceiroApplication.java
 ```
 
-Esse modelo facilita manutenção, testes e evolução do sistema.
+### 🔐 Fluxo de autenticação
 
----
-
-## Domínios e Funcionalidades
-
-**Domínios principais**
-
-- Usuários
-- Autenticação
-- Títulos financeiros
-- Centros de custo
-- Dashboard
-
-**Funcionalidades previstas**
-
-- Autenticação e autorização com JWT
-- Cadastro e manutenção de usuários
-- Recuperação de senha com expiração configurável
-- Controle de títulos financeiros
-- Controle de centros de custo
-- Dashboard financeiro interativo
-- Documentação interativa via Swagger/OpenAPI
-
----
-
-## Pré-requisitos
-
-- Java 17+
-- Maven 3.8+
-- PostgreSQL 13+ (ou Docker, para uso via Compose)
-- (Opcional) Docker e Docker Compose para execução completa do stack
-
----
-
-## Configuração
-
-### Banco de dados local
-
-```sql
-CREATE DATABASE certus;
+```
+Cliente ──► /auth/login ──► AuthController
+                              │
+                              ▼
+                       AuthenticationManager (Spring Security)
+                              │
+                              ▼
+                       UserDetailsSecurityServer ──► UsuarioRepository
+                              │
+                              ▼
+                          JWT (jjwt) ──► LoginResponse
+                              
+Cliente ──► /api/** (Bearer) ──► JwtAuthorizationFilter ──► Controller
 ```
 
-### Variáveis de ambiente
+---
 
-Crie um arquivo `.env` na raiz do projeto (não versionado) com as seguintes variáveis:
+## 🗂️ Modelagem de Dados
 
-```env
-# Banco de dados
-DATABASE_URL=jdbc:postgresql://localhost:5432/certus
-DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=sua_senha
+Diagrama Entidade-Relacionamento das tabelas principais:
 
-# JWT
-JWT_SECRET_KEY=sua_chave_com_pelo_menos_32_caracteres
+```mermaid
+erDiagram
+    USUARIO ||--o{ TITULO              : "possui"
+    USUARIO ||--o{ CENTRO_DE_CUSTO     : "cadastra"
+    USUARIO ||--o{ RECUPERACAO_SENHA   : "solicita"
+    TITULO  }o--o{ CENTRO_DE_CUSTO     : "categorizado por"
 
-# Recuperação de senha
-PASSWORD_RECOVERY_EXPIRATION_MINUTES=15
+    USUARIO {
+        bigint   id PK
+        string   nome
+        string   email UK
+        string   senha
+        string   celular UK
+        instant  data_criacao
+        instant  data_inativacao
+    }
 
-# Envio de e-mail (Resend)
-MAIL_FROM=onboarding@resend.dev
-RESEND_API_KEY=re_sua_chave_da_resend
+    TITULO {
+        bigint     id PK
+        string     descricao
+        decimal    valor
+        date       data_vencimento
+        datetime   data_pagamento
+        enum       tipo "PAGAR | RECEBER"
+        bigint     id_usuario FK
+    }
+
+    CENTRO_DE_CUSTO {
+        bigint   id PK
+        string   descricao
+        text     observacao
+        bigint   id_usuario FK
+    }
+
+    TITULO_CENTRO_CUSTO {
+        bigint id_titulo FK
+        bigint id_centro_custo FK
+    }
+
+    RECUPERACAO_SENHA {
+        bigint    id PK
+        bigint    id_usuario FK
+        string    codigo "6 dígitos"
+        boolean   ativo
+        datetime  data_criacao
+        datetime  data_expiracao
+        datetime  data_inativacao
+        datetime  data_utilizacao
+    }
 ```
 
-> O arquivo `application.yaml` é versionado, mas valores sensíveis devem ser fornecidos exclusivamente via variáveis de ambiente.
+> 💡 **Multitenant por usuário:** todo recurso (título, centro de custo) é **escopado pelo usuário autenticado**, garantido pela camada de serviço via `AuthenticatedUserProvider`.
 
 ---
 
-## Execução Local
+## ✅ Pré-requisitos
+
+- ☕ **Java 17+**
+- 📦 **Maven 3.8+**
+- 🐘 **PostgreSQL 13+** *(ou Docker, para usar o Compose)*
+- 🐳 **Docker & Docker Compose** *(opcional, recomendado)*
+
+---
+
+## ⚙️ Configuração
+
+Crie um arquivo **`.env`** na raiz do projeto a partir do template fornecido:
 
 ```bash
-# Compilar
+cp .env.example .env
+```
+
+Em seguida, preencha os valores reais (banco de dados, segredo JWT, credenciais do provedor de e-mail, tempo de expiração da recuperação de senha).
+
+> 🔒 O arquivo `.env` **não é versionado**. Consulte o **[`.env.example`](./.env.example)** para a lista completa de variáveis e seus formatos esperados.
+> Em produção, prefira injetar as variáveis pelo orquestrador (Render, Kubernetes, ECS, etc.) em vez de manter um arquivo no servidor.
+
+---
+
+## ▶️ Execução Local
+
+```bash
+# Compilar e instalar dependências
 mvn clean install
 
-# Executar
+# Subir a aplicação
 mvn spring-boot:run
 ```
 
-A API ficará disponível em:
+A API ficará disponível em **http://localhost:8080**.
 
-```
-http://localhost:8080
-```
-
-A porta também pode ser sobrescrita pela variável de ambiente `PORT` (útil em provedores de deploy).
+> A porta pode ser sobrescrita pela variável `PORT` (útil em provedores de deploy gerenciado).
 
 ---
 
-## Execução com Docker Compose
+## 🐳 Execução com Docker Compose
 
-O `docker-compose.yml` provisiona toda a stack: aplicação, PostgreSQL, Prometheus e Grafana.
+O `docker-compose.yml` provisiona toda a stack: **API + PostgreSQL + Prometheus + Grafana**.
 
 ```bash
 docker compose up --build
 ```
 
-| Serviço     | URL                          | Credenciais         |
-| ----------- | ---------------------------- | ------------------- |
-| API         | http://localhost:8080        | —                   |
-| PostgreSQL  | localhost:5432 (db `certus`) | via `.env`          |
-| Prometheus  | http://localhost:9090        | —                   |
-| Grafana     | http://localhost:3000        | `admin` / `admin`   |
+| Serviço      | URL                            | Credenciais        |
+| ------------ | ------------------------------ | ------------------ |
+| 🚀 API        | http://localhost:8080          | —                  |
+| 🐘 PostgreSQL | `localhost:5432` (db `certus`) | via `.env`         |
+| 📈 Prometheus | http://localhost:9090          | —                  |
+| 📊 Grafana    | http://localhost:3000          | `admin` / `admin`  |
 
-Para construir/rodar apenas a imagem da aplicação:
+Para construir e rodar **apenas** a imagem da aplicação:
 
 ```bash
 docker build -t certus-financeiro-backend .
@@ -191,59 +242,52 @@ docker run --env-file .env -p 8080:8080 certus-financeiro-backend
 
 ---
 
-## Observabilidade
+## 📡 Observabilidade
 
-Endpoints expostos pelo Spring Boot Actuator:
+Endpoints expostos pelo **Spring Boot Actuator**:
 
-- `GET /actuator/health` — health check da aplicação
-- `GET /actuator/info`   — metadados
-- `GET /actuator/prometheus` — métricas no formato Prometheus
+| Endpoint | Descrição |
+| --- | --- |
+| `GET /actuator/health` | Health check da aplicação |
+| `GET /actuator/info` | Metadados de build |
+| `GET /actuator/prometheus` | Métricas no formato Prometheus |
 
-Métricas são coletadas pelo Prometheus (configuração em `monitoring/prometheus/prometheus.yml`) e podem ser visualizadas no Grafana já provisionado pelo Compose.
+As métricas são coletadas pelo Prometheus (`monitoring/prometheus/prometheus.yml`) e podem ser exploradas no Grafana já provisionado pelo Compose.
 
 ---
 
-## Documentação da API
+## 📖 Documentação da API
 
 Após subir a aplicação, a documentação interativa fica disponível em:
 
-```
-http://localhost:8080/swagger-ui.html
-http://localhost:8080/v3/api-docs
-```
+- 🧪 **Swagger UI:** http://localhost:8080/swagger-ui.html
+- 📜 **OpenAPI JSON:** http://localhost:8080/v3/api-docs
 
-Grupos principais de endpoints:
+**Grupos de endpoints:**
 
-- Autenticação
-- Usuários
-- Títulos
-- Centros de Custo
-- Dashboard
+`Autenticação` · `Usuários` · `Títulos` · `Centros de Custo` · `Dashboard`
 
 ---
 
-## Deploy
+## ☁️ Deploy
 
-O projeto inclui um `render.yaml` para deploy no [Render](https://render.com/). Em qualquer provedor, basta configurar as variáveis de ambiente listadas em [Configuração](#configuração) com os valores reais de banco, JWT, e-mail e recuperação de senha.
-
----
-
-## Integração com o Front-end
-
-Esta API é consumida pelo front-end React + TypeScript do projeto:
-
-- [Front-end React + TypeScript](https://github.com/jefti/Certus_ControleFinanceiro_FrontEnd)
-
-O objetivo é oferecer endpoints para:
-
-- Login e sessão de usuário
-- Cadastro de usuários
-- Operações cadastrais do sistema
-- Consulta de dados consolidados no dashboard
+O projeto inclui um **`render.yaml`** pronto para deploy no [Render](https://render.com/).
+Em qualquer provedor, basta configurar as variáveis listadas em [`.env.example`](./.env.example) com os valores reais.
 
 ---
 
-## Autores
+## 👥 Autores
 
-- Marcelo Pinotti — [GitHub](https://github.com/marcelopinotti)
-- Jefti Meira — [GitHub](https://github.com/jefti)
+<div align="center">
+
+| [<img src="https://github.com/marcelopinotti.png" width="100" style="border-radius:50%"><br/><sub><b>Marcelo Pinotti</b></sub>](https://github.com/marcelopinotti) | [<img src="https://github.com/jefti.png" width="100" style="border-radius:50%"><br/><sub><b>Jefti Meira</b></sub>](https://github.com/jefti) |
+| :---: | :---: |
+| Back-end | Full-stack |
+
+</div>
+
+---
+
+
+*Feito com ☕ e Spring Boot.*
+
