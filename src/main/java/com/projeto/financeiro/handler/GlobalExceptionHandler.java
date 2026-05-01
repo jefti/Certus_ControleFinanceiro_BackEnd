@@ -3,6 +3,8 @@ package com.projeto.financeiro.handler;
 import com.projeto.financeiro.exception.ApiError;
 import com.projeto.financeiro.exception.HttpApiException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
@@ -33,7 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(
             Exception ex, HttpServletRequest request) {
-        ex.printStackTrace();
+        LOGGER.error("Erro inesperado: {}", ex.getMessage(), ex);
         ApiError error = new ApiError(
                 LocalDateTime.now().format(FORMATTER),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
