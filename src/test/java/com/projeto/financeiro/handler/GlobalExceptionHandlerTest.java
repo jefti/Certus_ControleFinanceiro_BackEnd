@@ -22,7 +22,7 @@ class GlobalExceptionHandlerTest {
         HttpServletRequest request = org.mockito.Mockito.mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn("/auth/forgot-password");
 
-        ResponseEntity<ApiError> response = handler.handleEmailDeliveryException(
+        ResponseEntity<ApiError> response = handler.handleHttpApiException(
                 new EmailDeliveryException("Falha ao enviar email de recuperacao."),
                 request);
 
