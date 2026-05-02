@@ -29,10 +29,12 @@ public class RecuperacaoSenhaService {
     private final UsuarioRepository usuarioRepository;
     private final RecuperacaoSenhaRepository recuperacaoSenhaRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final EmailProvider emailService;
 
     @Value("${app.password-recovery.expiration-minutes}")
     private long expirationMinutes;
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Transactional
     public SimpleMessageResponse solicitarRecuperacao(ForgotPasswordRequest request) {
@@ -100,8 +102,7 @@ public class RecuperacaoSenhaService {
     }
 
     private String gerarCodigo() {
-        SecureRandom random = new SecureRandom();
-        int numero = random.nextInt(1_000_000);
+        int numero = RANDOM.nextInt(1_000_000);
         return String.format("%06d", numero);
     }
 

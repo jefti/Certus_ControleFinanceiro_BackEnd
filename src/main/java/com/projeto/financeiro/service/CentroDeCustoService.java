@@ -10,10 +10,7 @@ import com.projeto.financeiro.exception.ConflictException;
 import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.CentroDeCustoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +19,17 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CentroDeCustoService implements CrudService<CentroDeCustoRequest, CentroDeCustoResponse> {
+public class CentroDeCustoService implements UserScopedCrudService<CentroDeCustoRequest, CentroDeCustoResponse> {
 
     private final CentroDeCustoRepository centroDeCustoRepository;
     private final CentroDeCustoMapper centroDeCustoMapper;
+    private final AuthenticatedUserProvider userProvider;
 
     @Override
     @PreAuthorize("isAuthenticated()")
     public CentroDeCustoResponse criar(CentroDeCustoRequest dto) {
         validarCamposObrigatorios(dto);
-        Usuario usuario = usuarioAutenticado();
+        Usuario usuario = userProvider.getCurrentUser();
         if (centroDeCustoRepository.existsByDescricaoAndUsuario(dto.descricao(), usuario)) {
             throw new ConflictException("Centro de custo com descrição '" + dto.descricao() + "' já existe.");
         }
@@ -42,7 +40,7 @@ public class CentroDeCustoService implements CrudService<CentroDeCustoRequest, C
     @Override
     @PreAuthorize("isAuthenticated()")
     public List<CentroDeCustoResponse> listarTodos() {
-        Usuario usuario = usuarioAutenticado();
+        Usuario usuario = userProvider.getCurrentUser();
         return centroDeCustoRepository.findByUsuario(usuario).stream()
                 .map(centroDeCustoMapper::toDto)
                 .toList();
@@ -51,7 +49,7 @@ public class CentroDeCustoService implements CrudService<CentroDeCustoRequest, C
     @Override
     @PreAuthorize("isAuthenticated()")
     public CentroDeCustoResponse buscarPorId(long id) {
-        Usuario usuario = usuarioAutenticado();
+        Usuario usuario = userProvider.getCurrentUser();
         CentroDeCusto centroDeCusto = centroDeCustoRepository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> centroDeCustoNaoEncontrado(id));
         return centroDeCustoMapper.toDto(centroDeCusto);
@@ -62,7 +60,7 @@ public class CentroDeCustoService implements CrudService<CentroDeCustoRequest, C
     @Transactional
     public CentroDeCustoResponse atualizar(long id, CentroDeCustoRequest dto) {
         validarCamposObrigatorios(dto);
-        Usuario usuario = usuarioAutenticado();
+        Usuario usuario = userProvider.getCurrentUser();
         CentroDeCusto centroDeCusto = centroDeCustoRepository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> centroDeCustoNaoEncontrado(id));
         centroDeCustoMapper.updateEntity(centroDeCusto, dto);
@@ -72,18 +70,10 @@ public class CentroDeCustoService implements CrudService<CentroDeCustoRequest, C
     @Override
     @PreAuthorize("isAuthenticated()")
     public void inativar(long id) {
-        Usuario usuario = usuarioAutenticado();
+        Usuario usuario = userProvider.getCurrentUser();
         CentroDeCusto centroDeCusto = centroDeCustoRepository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() -> centroDeCustoNaoEncontrado(id));
         centroDeCustoRepository.delete(centroDeCusto);
-    }
-
-    private Usuario usuarioAutenticado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof Usuario usuario)) {
-            throw new AccessDeniedException("Usuário não autenticado");
-        }
-        return usuario;
     }
 
     private NotFoundException centroDeCustoNaoEncontrado(long id) {

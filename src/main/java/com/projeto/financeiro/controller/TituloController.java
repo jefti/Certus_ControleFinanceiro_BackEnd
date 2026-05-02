@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class TituloController {
             content = @Content(schema = @Schema(implementation = TituloResponse.class)))
     @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou invalidos", content = @Content)
     @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
-    public ResponseEntity<TituloResponse> cadastrar(@RequestBody TituloRequest tituloRequest) {
+    public ResponseEntity<TituloResponse> cadastrar(@RequestBody @Valid TituloRequest tituloRequest) {
         TituloResponse titulo = tituloService.criar(tituloRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(titulo);
     }

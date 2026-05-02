@@ -1,11 +1,10 @@
 package com.projeto.financeiro.handler;
 
 import com.projeto.financeiro.exception.ApiError;
-import com.projeto.financeiro.exception.BadRequestException;
-import com.projeto.financeiro.exception.ConflictException;
-import com.projeto.financeiro.exception.EmailDeliveryException;
-import com.projeto.financeiro.exception.NotFoundException;
+import com.projeto.financeiro.exception.HttpApiException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,66 +16,34 @@ import java.time.format.DateTimeFormatter;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler(HttpApiException.class)
+    public ResponseEntity<ApiError> handleHttpApiException(
+            HttpApiException ex, HttpServletRequest request) {
         ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
-                HttpStatus.NOT_FOUND.value(),
-                "Recurso não encontrado",
+                LocalDateTime.now().format(FORMATTER),
+                ex.getStatus().value(),
+                ex.getTitle(),
                 ex.getMessage(),
                 request.getRequestURI()
         );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequestException(BadRequestException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
-                HttpStatus.BAD_REQUEST.value(),
-                "Erro de negócio",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(EmailDeliveryException.class)
-    public ResponseEntity<ApiError> handleEmailDeliveryException(EmailDeliveryException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                "Falha no envio de email",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
-    }
-
-    // Para fins de log no console
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
-        ex.printStackTrace();
+    public ResponseEntity<ApiError> handleGenericException(
+            Exception ex, HttpServletRequest request) {
+        LOGGER.error("Erro inesperado: {}", ex.getMessage(), ex);
         ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
+                LocalDateTime.now().format(FORMATTER),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Erro interno do servidor",
                 "Ocorreu um erro inesperado no sistema. Tente novamente mais tarde.",
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ApiError> handleConflict(ConflictException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                LocalDateTime.now().format(formatter),
-                HttpStatus.CONFLICT.value(),
-                "Conflito de dados",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
