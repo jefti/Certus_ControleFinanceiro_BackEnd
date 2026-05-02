@@ -39,6 +39,9 @@ auth:
     expiration: 3600000
 
 app:
+  actuator:
+    username: ${APP_ACTUATOR_USERNAME:admin}
+    password: ${APP_ACTUATOR_PASSWORD:admin123}
   mail:
     from: ${MAIL_FROM:onboarding@resend.dev}
     resend:
