@@ -79,7 +79,7 @@ public class TituloController {
     @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou invalidos", content = @Content)
     @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
     @ApiResponse(responseCode = "404", description = "Titulo nao encontrado", content = @Content)
-    public ResponseEntity<TituloResponse> atualizar(@PathVariable long id, @RequestBody TituloRequest tituloRequest) {
+    public ResponseEntity<TituloResponse> atualizar(@PathVariable long id, @RequestBody @Valid TituloRequest tituloRequest) {
         return ResponseEntity.ok(tituloService.atualizar(id, tituloRequest));
     }
 

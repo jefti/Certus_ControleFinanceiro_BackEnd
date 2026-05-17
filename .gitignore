@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -31,5 +31,39 @@ build/
 
 ### VS Code ###
 .vscode/
-task.md
+
+### Environment ###
 .env
+.env.local
+
+### Python ###
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+### Logs ###
+logs/
+*.log
+
+### Temporary files ###
+*.tmp
+*.lock
+task.md
+
+### Maestro ###
+.maestro/
+maestro-state.json*
+maestro.log
+maestro.toml
+
+### Agents ###
+.agents/
+skills-lock.json
+
+### Examples ###
+*.xlsx
+exemplo_*

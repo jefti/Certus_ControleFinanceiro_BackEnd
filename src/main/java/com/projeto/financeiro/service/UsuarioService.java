@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioService implements CrudService<UsuarioRequest, UsuarioResponse> {
 
-    public final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
 
 
