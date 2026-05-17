@@ -27,7 +27,7 @@ public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final UserDetailsSecurityServer userdetailssecurityserver;
+    private final UserDetailsSecurityServer userDetailsSecurityServer;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -90,7 +90,7 @@ public class WebSecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAt(new JwtAuthenticationFilter(authManager, jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthorizationFilter(authManager, jwtUtil, userdetailssecurityserver));
+                .addFilter(new JwtAuthorizationFilter(authManager, jwtUtil, userDetailsSecurityServer));
 
         return http.build();
     }

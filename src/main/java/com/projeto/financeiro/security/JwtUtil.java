@@ -31,7 +31,7 @@ public class JwtUtil {
     }
 
     public String gerarToken(Authentication authentication) {
-        Date dataExpircao = new Date(new Date().getTime() + jwtExpirationMs);
+        Date dataExpiracao = new Date(new Date().getTime() + jwtExpirationMs);
         Usuario usuario = (Usuario) authentication.getPrincipal();
         try {
             Key secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
@@ -39,7 +39,7 @@ public class JwtUtil {
             // Gerar o token JWT usando a biblioteca JJWT
             return Jwts.builder()
                     .subject((usuario.getEmail()))
-                    .expiration(dataExpircao)
+                    .expiration(dataExpiracao)
                     .issuedAt(new Date())
                     .signWith(secretKey)
                     .compact();
