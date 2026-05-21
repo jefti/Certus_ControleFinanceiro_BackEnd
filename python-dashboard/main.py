@@ -1,14 +1,8 @@
-"""FastAPI service that exports the user's dashboard data to Excel.
-
-Receives the caller's bearer token, fetches titulos from the Java backend,
-builds an Excel workbook with Pandas and returns it as a download.
-"""
-
 from __future__ import annotations
 
 import io
 import os
-from typing import Any
+from typing import Any,Annotated
 
 import httpx
 import pandas as pd
@@ -80,7 +74,7 @@ def health() -> dict[str, str]:
 
 
 @app.get("/dashboard/export")
-async def export_dashboard(authorization: str | None = Header(default=None)) -> StreamingResponse:
+async def export_dashboard(authorization: Annotated[str | None, Header()] = None) -> StreamingResponse:
     if not authorization:
         raise HTTPException(status_code=401, detail="Authorization header obrigatorio")
 
