@@ -34,7 +34,7 @@ public class TituloService implements CrudService<TituloRequest, TituloResponse>
     @PreAuthorize("isAuthenticated()")
     public List<TituloResponse> listarTodos() {
         Usuario usuario = usuarioAutenticado();
-        return tituloRepository.findByUsuario(usuario).stream()
+        return tituloRepository.findAllByUsuario(usuario).stream()
                 .map(tituloMapper::toDto)
                 .toList();
     }
