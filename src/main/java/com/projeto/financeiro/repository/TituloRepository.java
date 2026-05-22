@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TituloRepository extends JpaRepository<Titulo, Long> {
-    List<Titulo> findByUsuario(Usuario usuario);
+    List<Titulo> findAllByUsuario(Usuario usuario);
+
+//    List<Titulo> findAllByUsuarioAndAtivo(Usuario usuario, boolean ativo);
+
     Optional<Titulo> findByIdAndUsuario(Long id, Usuario usuario);
 }
