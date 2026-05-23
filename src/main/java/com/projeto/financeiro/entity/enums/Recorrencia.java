@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Recorrencia {
+    SEMANAL("Semanal"),
     MENSAL("Mensal"),
     BIMESTRAL("Bimestral"),
     TRIMESTRAL("Trimestral"),
