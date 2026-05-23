@@ -38,6 +38,7 @@ public class TituloService implements CrudService<TituloRequest, TituloResponse>
 
     @Override
     @PreAuthorize("isAuthenticated()")
+    @Transactional(readOnly = true)
     public List<TituloResponse> listarTodos() {
         Usuario usuario = usuarioAutenticado();
         return tituloRepository.findAllByUsuario(usuario).stream()
@@ -47,6 +48,7 @@ public class TituloService implements CrudService<TituloRequest, TituloResponse>
 
     @Override
     @PreAuthorize("isAuthenticated()")
+    @Transactional(readOnly = true)
     public TituloResponse buscarPorId(long id) {
         Usuario usuario = usuarioAutenticado();
         Titulo titulo = tituloRepository.findByIdAndUsuario(id, usuario)
