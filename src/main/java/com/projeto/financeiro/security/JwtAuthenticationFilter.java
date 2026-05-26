@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
             if (request.getContentLengthLong() == 0) {
-                throw new BadCredentialsException("Credenciais invÃ¡lidas");
+                throw new BadCredentialsException("Credenciais inválidas");
             }
 
             LoginRequest login = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return authenticationManager.authenticate(authToken);
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Credenciais invÃ¡lidas");
+            throw new BadCredentialsException("Credenciais inválidas");
         } catch (Exception ex) {
             throw new InternalAuthenticationServiceException(ex.getMessage());
         }
@@ -96,7 +96,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString("Falha na autenticaÃ§Ã£o: " + failed.getMessage()));
+        response.getWriter().write(objectMapper.writeValueAsString("Falha na autenticação: " + failed.getMessage()));
         response.getWriter().flush();
     }
 }

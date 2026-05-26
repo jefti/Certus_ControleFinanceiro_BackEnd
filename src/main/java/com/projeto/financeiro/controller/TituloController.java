@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,15 +28,15 @@ public class TituloController {
 
     @PostMapping("/cadastrar")
     @Operation(
-            summary = "Cadastrar titulo",
-            description = "Cria um novo titulo vinculado ao usuario autenticado",
+            summary = "Cadastrar título",
+            description = "Cria um novo título. Se não houver recorrência, o sistema gera um faturamento único. Se houver recorrência e dataFim, o sistema gera as ocorrências correspondentes no cadastro.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    @ApiResponse(responseCode = "201", description = "Titulo cadastrado com sucesso",
+    @ApiResponse(responseCode = "201", description = "Título cadastrado com sucesso",
             content = @Content(schema = @Schema(implementation = TituloResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou invalidos", content = @Content)
-    @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
-    public ResponseEntity<TituloResponse> cadastrar(@RequestBody TituloRequest tituloRequest) {
+    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou regra de recorrência inválida", content = @Content)
+    @ApiResponse(responseCode = "401", description = "Não autenticado", content = @Content)
+    public ResponseEntity<TituloResponse> cadastrar(@Valid @RequestBody TituloRequest tituloRequest) {
         TituloResponse titulo = tituloService.criar(tituloRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(titulo);
     }
@@ -70,22 +71,23 @@ public class TituloController {
     @PutMapping("/atualizar/{id}")
     @Operation(
             summary = "Atualizar titulo",
-            description = "Atualiza os dados de um titulo existente do usuario autenticado",
+            description = "Atualiza os dados de um titulo existente. Faturamentos nao pagos podem ser recriados com base na nova regra; faturamentos ja pagos sao preservados.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(responseCode = "200", description = "Titulo atualizado com sucesso",
             content = @Content(schema = @Schema(implementation = TituloResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou invalidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Dados obrigatorios ausentes ou regra de recorrencia invalida", content = @Content)
     @ApiResponse(responseCode = "401", description = "Nao autenticado", content = @Content)
     @ApiResponse(responseCode = "404", description = "Titulo nao encontrado", content = @Content)
-    public ResponseEntity<TituloResponse> atualizar(@PathVariable long id, @RequestBody TituloRequest tituloRequest) {
+    @ApiResponse(responseCode = "409", description = "Titulo inativo nao pode ser atualizado", content = @Content)
+    public ResponseEntity<TituloResponse> atualizar(@PathVariable long id, @Valid @RequestBody TituloRequest tituloRequest) {
         return ResponseEntity.ok(tituloService.atualizar(id, tituloRequest));
     }
 
     @DeleteMapping("/deletar/{id}")
     @Operation(
             summary = "Inativar titulo",
-            description = "Realiza a remocao de um titulo pelo id",
+            description = "Inativa o titulo sem remover o historico financeiro ja gerado.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(responseCode = "204", description = "Titulo inativado com sucesso", content = @Content)
