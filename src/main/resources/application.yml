@@ -55,7 +55,7 @@ app:
 
 management:
   server:
-    port: ${MANAGEMENT_PORT}
+    port: ${PORT:8080}
   endpoints:
     web:
       exposure:
