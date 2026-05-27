@@ -191,6 +191,37 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.60</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+							<excludes>
+								<exclude>com/projeto/financeiro/FinanceiroApplication.class</exclude>
+								<exclude>com/projeto/financeiro/security/**</exclude>
+								<exclude>com/projeto/financeiro/entity/**</exclude>
+								<exclude>com/projeto/financeiro/dto/request/**</exclude>
+								<exclude>com/projeto/financeiro/dto/response/**</exclude>
+								<exclude>com/projeto/financeiro/exception/**</exclude>
+								<exclude>com/projeto/financeiro/repository/**</exclude>
+								<exclude>com/projeto/financeiro/controller/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
