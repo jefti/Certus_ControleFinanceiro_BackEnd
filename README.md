@@ -129,70 +129,69 @@ Cliente ──► /api/** (Bearer) ──► JwtAuthorizationFilter ──► Co
 
 Diagrama Entidade-Relacionamento das tabelas principais:
 
-```mermaid
-erDiagram
-    USUARIO ||--o{ TITULO              : "possui"
-    USUARIO ||--o{ CENTRO_DE_CUSTO     : "cadastra"
-    USUARIO ||--o{ RECUPERACAO_SENHA   : "solicita"
-    TITULO  ||--o{ FATURAMENTO         : "gera"
-    TITULO  }o--o{ CENTRO_DE_CUSTO     : "categorizado por"
-
-    USUARIO {
-        bigint   id PK
-        string   nome
-        string   email UK
-        string   senha
-        string   celular UK
-        instant  data_criacao
-        instant  data_inativacao
-    }
-
-    TITULO {
-        bigint     id PK
-        string     descricao
-        decimal    valor
-        date       data_vencimento
-        enum       tipo "PAGAR | RECEBER"
-        enum       recorrencia "UNICA | SEMANAL | MENSAL | ANUAL"
-        date       data_inicio
-        date       data_fim
-        boolean    ativo
-        datetime   criado_em
-        bigint     id_usuario FK
-    }
-
-    FATURAMENTO {
-        bigint     id PK
-        bigint     id_titulo FK
-        date       data_vencimento
-        decimal    valor
-        datetime   data_pagamento
-        string     observacao
-    }
-
-    CENTRO_DE_CUSTO {
-        bigint   id PK
-        string   descricao
-        text     observacao
-        bigint   id_usuario FK
-    }
-
-    TITULO_CENTRO_CUSTO {
-        bigint id_titulo FK
-        bigint id_centro_custo FK
-    }
-
-    RECUPERACAO_SENHA {
-        bigint    id PK
-        bigint    id_usuario FK
-        string    codigo "6 dígitos"
-        boolean   ativo
-        datetime  data_criacao
-        datetime  data_expiracao
-        datetime  data_inativacao
-        datetime  data_utilizacao
-    }
 ```
+┌───────────────────┐          ┌──────────────────────┐          ┌────────────────────┐
+│      Usuario      │          │        Titulo        │          │   CentroDeCusto    │
+├───────────────────┤          ├──────────────────────┤          ├────────────────────┤
+│ id_usuario   PK   │──┐       │ id_titulo        PK  │       ┌──│ id_centro_custo PK │
+│ nome              │  │       │ descricao            │       │  │ descricao          │
+│ email   (unique)  │  │       │ valor                │       │  │ observacao         │
+│ senha             │  ├──────▶│ id_usuario       FK  │       │  │ id_usuario     FK  │
+│ celular (unique)  │  │       │ tipo                 │       │  └────────────────────┘
+│ data_criacao      │  │       │ recorrencia          │       │           ▲
+│ data_inativacao   │  │       │ data_vencimento      │       │           │
+└───────────────────┘  │       │ data_inicio          │       │           │
+         ▲             │       │ data_fim             │       │           │
+         │             │       │ ativo                │       │           │
+         │             │       │ criado_em            │       │           │
+         │             │       └──────────────────────┘       │           │
+         │             │                 │  ▲                 │           │
+         │             │                 ▼  │                 │           │
+         │             │       ┌──────────────────────┐       │           │
+         │             │       │ titulo_centro_custo  │       │           │
+         │             │       ├──────────────────────┤       │           │
+         │             │       │ id_titulo         FK ┼───────┘           │
+         │             │       │ id_centro_custo   FK ┼───────────────────┘
+         │             │       └──────────────────────┘
+         │             │                 │
+         │             │                 │  (Titulo 1 ──▶ N Faturamento)
+         │             │                 ▼
+         │             │       ┌──────────────────────┐
+         │             │       │      Faturamento     │
+         │             │       ├──────────────────────┤
+         │             │       │ id_faturamento   PK  │
+         │             │       │ id_titulo        FK  │
+         │             │       │ data_vencimento      │
+         │             │       │ valor                │
+         │             │       │ data_pagamento       │
+         │             │       │ observacao           │
+         │             │       └──────────────────────┘
+         │             │
+         │             └────────────────────▶ Titulo.id_usuario
+         │
+         │                       ┌──────────────────────────┐
+         │                       │     RecuperacaoSenha     │
+         │                       ├──────────────────────────┤
+         └──────────────────────▶│ id               PK      │
+                                 │ id_usuario       FK      │
+                                 │ codigo  (6 dígitos)      │
+                                 │ ativo                    │
+                                 │ data_criacao             │
+                                 │ data_expiracao           │
+                                 │ data_inativacao          │
+                                 │ data_utilizacao          │
+                                 └──────────────────────────┘
+```
+
+### 🔗 Relacionamentos (FKs)
+
+| De | Para | Tipo |
+| --- | --- | :---: |
+| `Titulo.id_usuario` | `Usuario.id_usuario` | N : 1 |
+| `CentroDeCusto.id_usuario` | `Usuario.id_usuario` | N : 1 |
+| `RecuperacaoSenha.id_usuario` | `Usuario.id_usuario` | N : 1 |
+| `Faturamento.id_titulo` | `Titulo.id_titulo` | N : 1 |
+| `titulo_centro_custo` | `Titulo` + `CentroDeCusto` | N : N |
 
 > 💡 **Multitenant por usuário:** todo recurso (título, centro de custo, faturamento) é **escopado pelo usuário autenticado**, garantido pela camada de serviço via `AuthenticatedUserProvider`.
 
