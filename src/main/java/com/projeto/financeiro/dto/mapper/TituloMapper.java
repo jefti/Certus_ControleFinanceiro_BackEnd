@@ -9,6 +9,7 @@ import com.projeto.financeiro.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -57,7 +58,7 @@ public class TituloMapper {
                 .dataFim(request.dataFim())
                 .ativo(true)
                 .usuario(usuario)
-                .centroDeCusto(centrosDeCusto != null ? centrosDeCusto : List.of())
+                .centroDeCusto(centrosDeCusto != null ? new ArrayList<>(centrosDeCusto) : new ArrayList<>())
                 .build();
     }
 
@@ -73,6 +74,6 @@ public class TituloMapper {
         entity.setRecorrencia(request.recorrencia());
         entity.setDataInicio(request.dataVencimento());
         entity.setDataFim(request.dataFim());
-        entity.setCentroDeCusto(centrosDeCusto != null ? centrosDeCusto : List.of());
+        entity.setCentroDeCusto(centrosDeCusto != null ? new ArrayList<>(centrosDeCusto) : new ArrayList<>());
     }
 }
