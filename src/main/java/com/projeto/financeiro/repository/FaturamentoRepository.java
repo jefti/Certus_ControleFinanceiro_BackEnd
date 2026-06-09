@@ -52,4 +52,16 @@ public interface FaturamentoRepository extends JpaRepository<Faturamento, Long> 
             @Param("id") Long id,
             @Param("usuario") Usuario usuario
     );
+
+    @Query("""
+        SELECT f FROM Faturamento f
+        WHERE f.titulo.usuario = :usuario
+          AND f.dataVencimento BETWEEN :periodoInicial AND :periodoFinal
+        ORDER BY f.dataVencimento ASC, f.id ASC
+    """)
+    List<Faturamento> findByPeriodoAndUsuario(
+            @Param("periodoInicial") LocalDate periodoInicial,
+            @Param("periodoFinal") LocalDate periodoFinal,
+            @Param("usuario") Usuario usuario
+    );
 }
