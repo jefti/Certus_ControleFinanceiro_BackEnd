@@ -3,10 +3,13 @@ package com.projeto.financeiro.repository;
 import com.projeto.financeiro.entity.Faturamento;
 import com.projeto.financeiro.entity.Titulo;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.entity.enums.TipoTitulo;
+import com.projeto.financeiro.dto.response.CentroDeCustoValorResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
