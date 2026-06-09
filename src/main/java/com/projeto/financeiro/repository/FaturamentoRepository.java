@@ -57,73 +57,14 @@ public interface FaturamentoRepository extends JpaRepository<Faturamento, Long> 
     );
 
     @Query("""
-        SELECT COALESCE(SUM(f.valor), 0)
-        FROM Faturamento f
-        WHERE f.titulo.usuario = :usuario
-          AND f.titulo.tipo = :tipo
-          AND f.dataPagamento IS NULL
-    """)
-    BigDecimal somarEmAbertoPorTipo(
-            @Param("usuario") Usuario usuario,
-            @Param("tipo") TipoTitulo tipo
-    );
-
-    @Query("""
-        SELECT COALESCE(SUM(f.valor), 0)
-        FROM Faturamento f
-        WHERE f.titulo.usuario = :usuario
-          AND f.titulo.tipo = :tipo
-          AND f.dataPagamento IS NOT NULL
-    """)
-    BigDecimal somarPagosPorTipo(
-            @Param("usuario") Usuario usuario,
-            @Param("tipo") TipoTitulo tipo
-    );
-
-    @Query("""
-        SELECT COUNT(f)
-        FROM Faturamento f
-        WHERE f.titulo.usuario = :usuario
-          AND f.dataVencimento < CURRENT_DATE
-          AND f.dataPagamento IS NULL
-    """)
-    long contarAtrasados(@Param("usuario") Usuario usuario);
-
-    @Query("""
-        SELECT COALESCE(SUM(f.valor), 0)
-        FROM Faturamento f
-        WHERE f.titulo.usuario = :usuario
-          AND f.dataVencimento < CURRENT_DATE
-          AND f.dataPagamento IS NULL
-    """)
-    BigDecimal somarAtrasados(@Param("usuario") Usuario usuario);
-
-    @Query("""
         SELECT f FROM Faturamento f
         WHERE f.titulo.usuario = :usuario
-          AND f.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite
-          AND f.dataPagamento IS NULL
-        ORDER BY f.dataVencimento ASC
+          AND f.dataVencimento BETWEEN :periodoInicial AND :periodoFinal
+        ORDER BY f.dataVencimento ASC, f.id ASC
     """)
-    List<Faturamento> buscarProximosVencimentos(
-            @Param("usuario") Usuario usuario,
-            @Param("dataLimite") LocalDate dataLimite
-    );
-
-    @Query("""
-        SELECT new com.projeto.financeiro.dto.response.CentroDeCustoValorResponse(
-            cc.descricao, COALESCE(SUM(f.valor), 0))
-        FROM Faturamento f
-        JOIN f.titulo t
-        JOIN t.centroDeCusto cc
-        WHERE t.usuario = :usuario
-          AND t.tipo = :tipo
-          AND f.dataPagamento IS NULL
-        GROUP BY cc.descricao
-        ORDER BY SUM(f.valor) DESC
-    """)
-    List<CentroDeCustoValorResponse> somarEmAbertoPorCentroDeCusto(
-            @Param("usuario") Usuario usuario,
-            @Param("tipo") TipoTitulo tipo
+    List<Faturamento> findByPeriodoAndUsuario(
+            @Param("periodoInicial") LocalDate periodoInicial,
+            @Param("periodoFinal") LocalDate periodoFinal,
+            @Param("usuario") Usuario usuario
     );
 }
