@@ -3,10 +3,13 @@ package com.projeto.financeiro.repository;
 import com.projeto.financeiro.entity.Faturamento;
 import com.projeto.financeiro.entity.Titulo;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.entity.enums.TipoTitulo;
+import com.projeto.financeiro.dto.response.CentroDeCustoValorResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +53,18 @@ public interface FaturamentoRepository extends JpaRepository<Faturamento, Long> 
     """)
     Optional<Faturamento> findByIdAndUsuario(
             @Param("id") Long id,
+            @Param("usuario") Usuario usuario
+    );
+
+    @Query("""
+        SELECT f FROM Faturamento f
+        WHERE f.titulo.usuario = :usuario
+          AND f.dataVencimento BETWEEN :periodoInicial AND :periodoFinal
+        ORDER BY f.dataVencimento ASC, f.id ASC
+    """)
+    List<Faturamento> findByPeriodoAndUsuario(
+            @Param("periodoInicial") LocalDate periodoInicial,
+            @Param("periodoFinal") LocalDate periodoFinal,
             @Param("usuario") Usuario usuario
     );
 }

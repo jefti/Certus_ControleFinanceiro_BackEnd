@@ -38,10 +38,6 @@ auth:
     secret: ${JWT_SECRET_KEY}
     expiration: 3600000
 
-actuator:
-  username: ${ACTUATOR_USERNAME}
-  password: ${ACTUATOR_PASSWORD}
-
 app:
   actuator:
     username: ${APP_ACTUATOR_USERNAME}
