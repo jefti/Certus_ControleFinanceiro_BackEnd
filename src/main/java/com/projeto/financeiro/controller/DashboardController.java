@@ -20,10 +20,11 @@ public class DashboardController implements DashboardControllerDoc {
     private final DashboardService dashboardService;
 
     @GetMapping
-    public ResponseEntity<DashboardResponse> obterDashboard(
+    public ResponseEntity<DashboardResponse> obter(
             @RequestParam LocalDate periodoInicial,
             @RequestParam LocalDate periodoFinal
     ) {
         return ResponseEntity.ok(dashboardService.obterDashboard(periodoInicial, periodoFinal));
     }
+
 }
