@@ -50,6 +50,8 @@ app:
     expiration-minutes: ${PASSWORD_RECOVERY_EXPIRATION_MINUTES}
 
 management:
+  server:
+    port: ${PORT:8080}
   endpoints:
     web:
       exposure:
