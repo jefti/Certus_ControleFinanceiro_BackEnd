@@ -1,6 +1,7 @@
 package com.projeto.financeiro.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +10,6 @@ public record ValidarFaturamentoRequest(
         LocalDateTime dataPagamento,
 
         @Schema(description = "Observacao opcional sobre a validacao do faturamento", example = "Pago via Pix", nullable = true)
-        String observacao
+        @Size(max = 500) String observacao
 ) {
 }
