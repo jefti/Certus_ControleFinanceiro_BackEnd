@@ -35,6 +35,39 @@ class FluxoFinanceiroIntegrationTest {
     }
 
     @Test
+    void shouldRateLimitLoginThroughSecurityFilterChain() throws Exception {
+        for (int attempt = 1; attempt <= 5; attempt++) {
+            mockMvc.perform(post("/api/auth/login")
+                            .with(request -> {
+                                request.setRemoteAddr("198.51.100.50");
+                                return request;
+                            })
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                      "email": "inexistente@email.com",
+                                      "senha": "senha-invalida"
+                                    }
+                                    """))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        mockMvc.perform(post("/api/auth/login")
+                        .with(request -> {
+                            request.setRemoteAddr("198.51.100.50");
+                            return request;
+                        })
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "inexistente@email.com",
+                                  "senha": "senha-invalida"
+                                }
+                                """))
+                .andExpect(status().isTooManyRequests());
+    }
+
+    @Test
     void shouldExecuteAuthenticatedFinancialFlow() throws Exception {
         mockMvc.perform(post("/api/usuarios/cadastrar")
                         .contentType(MediaType.APPLICATION_JSON)
