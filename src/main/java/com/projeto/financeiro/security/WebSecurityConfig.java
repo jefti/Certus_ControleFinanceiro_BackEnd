@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.validation.Validator;
 
 import java.util.List;
 
@@ -28,6 +29,12 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserDetailsSecurityServer userdetailssecurityserver;
+    private final Validator validator;
+
+    @Bean
+    public LoginRateLimitFilter loginRateLimitFilter() {
+        return new LoginRateLimitFilter();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -74,7 +81,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAt(new JwtAuthenticationFilter(authManager, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loginRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new JwtAuthenticationFilter(authManager, jwtUtil, validator), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthorizationFilter(authManager, jwtUtil, userdetailssecurityserver));
 
         return http.build();
