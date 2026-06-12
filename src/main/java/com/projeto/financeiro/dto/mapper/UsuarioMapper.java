@@ -3,6 +3,7 @@ package com.projeto.financeiro.dto.mapper;
 import com.projeto.financeiro.dto.request.UsuarioRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.security.TextSanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class UsuarioMapper {
 
     private final PasswordEncoder passwordEncoder;
+    private final TextSanitizer textSanitizer;
 
     public UsuarioResponse toDto(Usuario entity) {
         if (entity == null) {
@@ -34,8 +36,8 @@ public class UsuarioMapper {
         }
 
         return Usuario.builder()
-                .nome(request.nome())
-                .email(request.email())
+                .nome(textSanitizer.sanitize(request.nome()))
+                .email(request.email().trim().toLowerCase())
                 .senha(passwordEncoder.encode(request.senha()))
                 .celular(request.celular())
                 .build();
@@ -46,8 +48,8 @@ public class UsuarioMapper {
             return;
         }
 
-        entity.setNome(request.nome());
-        entity.setEmail(request.email());
+        entity.setNome(textSanitizer.sanitize(request.nome()));
+        entity.setEmail(request.email().trim().toLowerCase());
         if (request.senha() != null && !request.senha().isBlank()) {
             entity.setSenha(passwordEncoder.encode(request.senha()));
         }

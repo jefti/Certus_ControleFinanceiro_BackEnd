@@ -4,6 +4,7 @@ import com.projeto.financeiro.dto.request.CentroDeCustoRequest;
 import com.projeto.financeiro.dto.response.CentroDeCustoResponse;
 import com.projeto.financeiro.entity.CentroDeCusto;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.security.TextSanitizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CentroDeCustoMapperTest {
 
-    private final CentroDeCustoMapper mapper = new CentroDeCustoMapper();
+    private final CentroDeCustoMapper mapper = new CentroDeCustoMapper(new TextSanitizer());
 
     private Usuario usuario;
     private CentroDeCusto entity;
