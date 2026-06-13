@@ -5,6 +5,7 @@ import com.projeto.financeiro.dto.request.UsuarioRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class UsuarioController implements UsuarioControllerDoc {
     private final UsuarioService usuarioService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<UsuarioResponse> cadastrar(@RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         UsuarioResponse usuario = usuarioService.criar(usuarioRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuario);
@@ -35,7 +36,7 @@ public class UsuarioController implements UsuarioControllerDoc {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<UsuarioResponse> atualizar(@PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> atualizar(@PathVariable long id, @Valid @RequestBody UsuarioRequest usuarioRequest) {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuarioRequest));
     }
 

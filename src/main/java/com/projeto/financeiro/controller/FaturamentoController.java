@@ -5,6 +5,7 @@ import com.projeto.financeiro.dto.request.ValidarFaturamentoRequest;
 import com.projeto.financeiro.dto.response.FaturamentoResponse;
 import com.projeto.financeiro.service.FaturamentoService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class FaturamentoController implements FaturamentoControllerDoc {
     }
 
     @PatchMapping("/{id}/validar")
-    public ResponseEntity<FaturamentoResponse> validar(@PathVariable long id, @RequestBody(required = false) ValidarFaturamentoRequest request) {
+    public ResponseEntity<FaturamentoResponse> validar(@PathVariable long id, @Valid @RequestBody(required = false) ValidarFaturamentoRequest request) {
         return ResponseEntity.ok(faturamentoService.validar(id, request));
     }
 }
