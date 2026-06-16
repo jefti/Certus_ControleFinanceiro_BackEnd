@@ -75,7 +75,7 @@ class FluxoFinanceiroIntegrationTest {
                                 {
                                   "nome": "Maria Silva",
                                   "email": "maria.integration@email.com",
-                                  "senha": "123456",
+                                  "senha": "Senha@123",
                                   "celular": "85999990001"
                                 }
                                 """))
@@ -87,7 +87,7 @@ class FluxoFinanceiroIntegrationTest {
                         .content("""
                                 {
                                   "email": "maria.integration@email.com",
-                                  "senha": "123456"
+                                  "senha": "Senha@123"
                                 }
                                 """))
                 .andExpect(status().isOk())
