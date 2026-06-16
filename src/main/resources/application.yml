@@ -37,8 +37,12 @@ auth:
   jwt:
     secret: ${JWT_SECRET_KEY}
     expiration: 3600000
+    issuer: ${JWT_ISSUER}
+    audience: ${JWT_AUDIENCE}
 
 app:
+  # E-mails promovidos a ADMIN no startup (separados por virgula). Fonte unica de admin.
+  admin-emails: ${ADMIN_EMAILS}
   actuator:
     username: ${APP_ACTUATOR_USERNAME}
     password: ${APP_ACTUATOR_PASSWORD}
@@ -58,7 +62,7 @@ management:
     health:
       probes:
         enabled: true
-      show-details: always
+      show-details: when-authorized
     logfile:
       external-file: logs/application.log
   prometheus:
