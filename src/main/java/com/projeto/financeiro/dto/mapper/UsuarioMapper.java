@@ -1,6 +1,7 @@
 package com.projeto.financeiro.dto.mapper;
 
-import com.projeto.financeiro.dto.request.UsuarioRequest;
+import com.projeto.financeiro.dto.request.UsuarioCreateRequest;
+import com.projeto.financeiro.dto.request.UsuarioUpdateRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.security.TextSanitizer;
@@ -30,7 +31,7 @@ public class UsuarioMapper {
         );
     }
 
-    public Usuario toEntity(UsuarioRequest request) {
+    public Usuario toEntity(UsuarioCreateRequest request) {
         if (request == null) {
             return null;
         }
@@ -43,7 +44,7 @@ public class UsuarioMapper {
                 .build();
     }
 
-    public void updateEntity(Usuario entity, UsuarioRequest request) {
+    public void updateEntity(Usuario entity, UsuarioUpdateRequest request) {
         if (entity == null || request == null) {
             return;
         }
