@@ -1,5 +1,7 @@
 package com.projeto.financeiro.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +18,6 @@ import com.projeto.financeiro.dto.response.SimpleMessageResponse;
 import com.projeto.financeiro.entity.RecuperacaoSenha;
 import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.exception.BadRequestException;
-import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.RecuperacaoSenhaRepository;
 import com.projeto.financeiro.repository.UsuarioRepository;
 
@@ -25,6 +26,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class RecuperacaoSenhaService {
+
+    private static final int MAX_TENTATIVAS = 5;
+
+    private static final String MENSAGEM_CODIGO_INVALIDO = "Código de recuperação inválido ou expirado.";
 
     private final UsuarioRepository usuarioRepository;
     private final RecuperacaoSenhaRepository recuperacaoSenhaRepository;
@@ -39,7 +44,7 @@ public class RecuperacaoSenhaService {
         Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(request.email());
 
         if (usuarioOptional.isEmpty()) {
-            throw new NotFoundException("Usuário não encontrado.");
+            return new SimpleMessageResponse("Se o email estiver cadastrado, um código de recuperação foi enviado.");
         }
 
         Usuario usuario = usuarioOptional.get();
@@ -68,32 +73,39 @@ public class RecuperacaoSenhaService {
         );
     }
 
+    @Transactional
     public SimpleMessageResponse resetarSenha(ResetPasswordRequest request) {
+        // Busca o usuário e o pedido ativo SEM filtrar pelo código: é o que permite
+        // contar tentativas erradas. Toda falha devolve a mesma mensagem genérica.
         Usuario usuario = usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado para o email informado."));
+                .orElseThrow(() -> new BadRequestException(MENSAGEM_CODIGO_INVALIDO));
 
         RecuperacaoSenha recuperacao = recuperacaoSenhaRepository
-                .findByUsuarioAndCodigoAndAtivoTrue(usuario, request.codigo())
-                .orElseThrow(() -> new BadRequestException("Código de recuperação inválido."));
+                .buscarAtivaPorUsuario(usuario)
+                .orElseThrow(() -> new BadRequestException(MENSAGEM_CODIGO_INVALIDO));
 
         if (isExpirada(recuperacao)) {
-            recuperacao.setAtivo(false);
-            recuperacao.setDataInativacao(LocalDateTime.now());
+            inativar(recuperacao);
             recuperacaoSenhaRepository.save(recuperacao);
-
-            throw new BadRequestException("Código de recuperação expirado.");
+            throw new BadRequestException(MENSAGEM_CODIGO_INVALIDO);
         }
 
-        if (recuperacao.getDataUtilizacao() != null) {
-            throw new BadRequestException("Código de recuperação já utilizado.");
+        if (!codigoConfere(recuperacao.getCodigo(), request.codigo())) {
+            recuperacao.setTentativas(recuperacao.getTentativas() + 1);
+            if (recuperacao.getTentativas() >= MAX_TENTATIVAS) {
+                inativar(recuperacao);
+            }
+            recuperacaoSenhaRepository.save(recuperacao);
+            throw new BadRequestException(MENSAGEM_CODIGO_INVALIDO);
         }
 
         usuario.setSenha(passwordEncoder.encode(request.novaSenha()));
+        // Invalida todos os tokens JWT emitidos antes da troca de senha.
+        usuario.setTokenVersion(usuario.getTokenVersion() + 1);
         usuarioRepository.save(usuario);
 
-        recuperacao.setAtivo(false);
+        inativar(recuperacao);
         recuperacao.setDataUtilizacao(LocalDateTime.now());
-        recuperacao.setDataInativacao(LocalDateTime.now());
         recuperacaoSenhaRepository.save(recuperacao);
 
         return new SimpleMessageResponse("Senha redefinida com sucesso.");
@@ -122,5 +134,17 @@ public class RecuperacaoSenhaService {
 
     private boolean isExpirada(RecuperacaoSenha recuperacao) {
         return recuperacao.getDataExpiracao().isBefore(LocalDateTime.now());
+    }
+
+    private void inativar(RecuperacaoSenha recuperacao) {
+        recuperacao.setAtivo(false);
+        recuperacao.setDataInativacao(LocalDateTime.now());
+    }
+
+    // Compara em tempo constante para não vazar o código por timing attack.
+    private boolean codigoConfere(String esperado, String informado) {
+        return MessageDigest.isEqual(
+                esperado.getBytes(StandardCharsets.UTF_8),
+                informado.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -1,14 +1,17 @@
 package com.projeto.financeiro.service;
 
 import com.projeto.financeiro.dto.mapper.UsuarioMapper;
-import com.projeto.financeiro.dto.request.UsuarioRequest;
+import com.projeto.financeiro.dto.request.UsuarioCreateRequest;
+import com.projeto.financeiro.dto.request.UsuarioUpdateRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.exception.BadRequestException;
 import com.projeto.financeiro.exception.ConflictException;
-import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,15 +21,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioService implements CrudService<UsuarioRequest, UsuarioResponse> {
+public class UsuarioService {
 
     public final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
 
 
-    @Override
-    public UsuarioResponse criar(UsuarioRequest dto) {
-        validateUniques(dto, null);
+    public UsuarioResponse criar(UsuarioCreateRequest dto) {
+        validateUniques(dto.email(), dto.celular(), null);
         Usuario usuario = usuarioMapper.toEntity(dto);
         validarCadastro(usuario);
         if (usuario.getDataCriacao() == null) {
@@ -37,47 +39,31 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
         return usuarioMapper.toDto(salvo);
     }
 
-    @Override
-    public List<UsuarioResponse> listarTodos() {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        return usuarios.stream()
-                .map(usuarioMapper::toDto)
-                .toList();
+    public UsuarioResponse buscarMeuPerfil() {
+        return usuarioMapper.toDto(usuarioAutenticado());
     }
 
-    @Override
-    public UsuarioResponse buscarPorId(long id) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if (usuario.isEmpty()) {
-            throw usuarioNaoEncontrado(id);
+    public UsuarioResponse atualizar(UsuarioUpdateRequest dto) {
+        Usuario logado = usuarioAutenticado();
+        Long id = logado.getId();
+        validateUniques(dto.email(), dto.celular(), id);
+        usuarioMapper.updateEntity(logado, dto);
+        validarCadastro(logado);
+        return usuarioMapper.toDto(usuarioRepository.save(logado));
+    }
+
+    public void inativar() {
+        Usuario logado = usuarioAutenticado();
+        logado.setDataInativacao(Instant.now());
+        usuarioRepository.save(logado);
+    }
+
+    private Usuario usuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof Usuario usuario)) {
+            throw new AccessDeniedException("Usuario nao autenticado");
         }
-        return usuarioMapper.toDto(usuario.get());
-    }
-
-    @Override
-    public UsuarioResponse atualizar(long id, UsuarioRequest dto) {
-        return usuarioRepository.findById(id)
-            .map(usuarioExistente -> {
-                    validateUniques(dto, id);
-                    usuarioMapper.updateEntity(usuarioExistente, dto);
-                    validarCadastro(usuarioExistente);
-                    Usuario atualizado = usuarioRepository.save(usuarioExistente);
-                    return usuarioMapper.toDto(atualizado);
-                })
-                .orElseThrow(() -> usuarioNaoEncontrado(id));
-
-    }
-
-    @Override
-    public void inativar(long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> usuarioNaoEncontrado(id));
-        usuario.setDataInativacao(Instant.now());
-        usuarioRepository.save(usuario);
-    }
-
-    private NotFoundException usuarioNaoEncontrado(long id) {
-        return new NotFoundException("Usuário não encontrado com id: " + id);
+        return usuario;
     }
 
     private void validarCadastro(Usuario usuario) {
@@ -91,18 +77,18 @@ public class UsuarioService implements CrudService<UsuarioRequest, UsuarioRespon
         }
     }
 
-    private void validateUniques(UsuarioRequest dto, Long id) {
-        Optional<Usuario> usuarioExistenteEmail = usuarioRepository.findByEmail(dto.email());
+    private void validateUniques(String email, String celular, Long id) {
+        Optional<Usuario> usuarioExistenteEmail = usuarioRepository.findByEmail(email);
         if (usuarioExistenteEmail.isPresent()) {
             if (id == null || !usuarioExistenteEmail.get().getId().equals(id)) {
-                throw new ConflictException("Usuário com email " + dto.email() + " já existe.");
+                throw new ConflictException("Usuário com email " + email + " já existe.");
             }
         }
 
-        Optional<Usuario> usuarioExistenteCelular = usuarioRepository.findByCelular(dto.celular());
+        Optional<Usuario> usuarioExistenteCelular = usuarioRepository.findByCelular(celular);
         if (usuarioExistenteCelular.isPresent()) {
             if (id == null || !usuarioExistenteCelular.get().getId().equals(id)) {
-                throw new ConflictException("Celular " + dto.celular() + " já existe na nossa base de dados.");
+                throw new ConflictException("Celular " + celular + " já existe na nossa base de dados.");
             }
         }
     }
