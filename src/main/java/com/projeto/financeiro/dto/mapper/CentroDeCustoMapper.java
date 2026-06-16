@@ -4,10 +4,15 @@ import com.projeto.financeiro.dto.request.CentroDeCustoRequest;
 import com.projeto.financeiro.dto.response.CentroDeCustoResponse;
 import com.projeto.financeiro.entity.CentroDeCusto;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.security.TextSanitizer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class CentroDeCustoMapper {
+
+    private final TextSanitizer textSanitizer;
 
     public CentroDeCustoResponse toDto(CentroDeCusto entity) {
         if (entity == null) {
@@ -28,8 +33,8 @@ public class CentroDeCustoMapper {
 
         CentroDeCusto entity = new CentroDeCusto();
         entity.setId(request.id());
-        entity.setDescricao(request.descricao());
-        entity.setObservacao(request.observacao());
+        entity.setDescricao(textSanitizer.sanitize(request.descricao()));
+        entity.setObservacao(textSanitizer.sanitize(request.observacao()));
         entity.setUsuario(usuario);
         entity.setTitulos(null);
         return entity;
@@ -40,7 +45,7 @@ public class CentroDeCustoMapper {
             return;
         }
 
-        entity.setDescricao(request.descricao());
-        entity.setObservacao(request.observacao());
+        entity.setDescricao(textSanitizer.sanitize(request.descricao()));
+        entity.setObservacao(textSanitizer.sanitize(request.observacao()));
     }
 }

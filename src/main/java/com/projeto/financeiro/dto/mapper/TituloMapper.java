@@ -6,6 +6,7 @@ import com.projeto.financeiro.dto.response.TituloResponse;
 import com.projeto.financeiro.entity.CentroDeCusto;
 import com.projeto.financeiro.entity.Titulo;
 import com.projeto.financeiro.entity.Usuario;
+import com.projeto.financeiro.security.TextSanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class TituloMapper {
 
     private final CentroDeCustoMapper centroDeCustoMapper;
+    private final TextSanitizer textSanitizer;
 
     public TituloResponse toDto(Titulo entity) {
         if (entity == null) {
@@ -49,7 +51,7 @@ public class TituloMapper {
         }
 
         return Titulo.builder()
-                .descricao(request.descricao())
+                .descricao(textSanitizer.sanitize(request.descricao()))
                 .valor(request.valor())
                 .dataVencimento(request.dataVencimento())
                 .tipo(request.tipo())
@@ -67,7 +69,7 @@ public class TituloMapper {
             return;
         }
 
-        entity.setDescricao(request.descricao());
+        entity.setDescricao(textSanitizer.sanitize(request.descricao()));
         entity.setValor(request.valor());
         entity.setDataVencimento(request.dataVencimento());
         entity.setTipo(request.tipo());

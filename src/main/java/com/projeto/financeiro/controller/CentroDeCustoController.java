@@ -5,6 +5,7 @@ import com.projeto.financeiro.dto.request.CentroDeCustoRequest;
 import com.projeto.financeiro.dto.response.CentroDeCustoResponse;
 import com.projeto.financeiro.service.CentroDeCustoService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class CentroDeCustoController implements CentroDeCustoControllerDoc {
     private final CentroDeCustoService centroDeCustoService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<CentroDeCustoResponse> cadastrar(@RequestBody CentroDeCustoRequest centroDeCustoRequest) {
+    public ResponseEntity<CentroDeCustoResponse> cadastrar(@Valid @RequestBody CentroDeCustoRequest centroDeCustoRequest) {
         CentroDeCustoResponse centroDeCusto = centroDeCustoService.criar(centroDeCustoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(centroDeCusto);
     }
@@ -35,7 +36,7 @@ public class CentroDeCustoController implements CentroDeCustoControllerDoc {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<CentroDeCustoResponse> atualizar(@PathVariable long id, @RequestBody CentroDeCustoRequest centroDeCustoRequest) {
+    public ResponseEntity<CentroDeCustoResponse> atualizar(@PathVariable long id, @Valid @RequestBody CentroDeCustoRequest centroDeCustoRequest) {
         return ResponseEntity.ok(centroDeCustoService.atualizar(id, centroDeCustoRequest));
     }
 

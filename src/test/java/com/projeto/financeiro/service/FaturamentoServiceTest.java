@@ -11,12 +11,14 @@ import com.projeto.financeiro.entity.enums.TipoTitulo;
 import com.projeto.financeiro.exception.BadRequestException;
 import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.FaturamentoRepository;
+import com.projeto.financeiro.security.TextSanitizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +45,9 @@ class FaturamentoServiceTest {
 
     @Mock
     private FaturamentoMapper faturamentoMapper;
+
+    @Spy
+    private TextSanitizer textSanitizer = new TextSanitizer();
 
     @InjectMocks
     private FaturamentoService faturamentoService;

@@ -8,6 +8,8 @@ import com.projeto.financeiro.entity.Usuario;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -19,16 +21,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Set;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final Validator validator;
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, Validator validator) {
         super();
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.validator = validator;
         setAuthenticationManager(authenticationManager);
         setFilterProcessesUrl("/api/auth/login");
     }
@@ -41,6 +46,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             }
 
             LoginRequest login = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+            Set<ConstraintViolation<LoginRequest>> violations = validator.validate(login);
+            if (!violations.isEmpty()) {
+                throw new BadCredentialsException("Credenciais invalidas");
+            }
             String email = login.email() == null ? "" : login.email().trim().toLowerCase(Locale.ROOT);
             String senha = login.senha() == null ? "" : login.senha();
 

@@ -190,6 +190,7 @@ public class TituloService implements CrudService<TituloRequest, TituloResponse>
                     .build();
 
             faturamentoRepository.save(faturamento);
+            titulo.getFaturamentos().add(faturamento);
         }
     }
 
@@ -197,6 +198,7 @@ public class TituloService implements CrudService<TituloRequest, TituloResponse>
         List<Faturamento> naoPagos = faturamentoRepository.findByTituloAndDataPagamentoIsNull(titulo);
         if (!naoPagos.isEmpty()) {
             faturamentoRepository.deleteAll(naoPagos);
+            titulo.getFaturamentos().removeAll(naoPagos);
         }
     }
 }

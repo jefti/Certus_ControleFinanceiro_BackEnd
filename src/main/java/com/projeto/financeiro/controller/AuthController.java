@@ -10,6 +10,7 @@ import com.projeto.financeiro.dto.response.SimpleMessageResponse;
 import com.projeto.financeiro.service.RecuperacaoSenhaService;
 
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,12 +20,12 @@ public class AuthController implements AuthControllerDoc {
     private final RecuperacaoSenhaService recuperacaoSenhaService;
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<SimpleMessageResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<SimpleMessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         return ResponseEntity.ok(recuperacaoSenhaService.solicitarRecuperacao(request));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<SimpleMessageResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<SimpleMessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         return ResponseEntity.ok(recuperacaoSenhaService.resetarSenha(request));
     }
 }

@@ -7,6 +7,7 @@ import com.projeto.financeiro.entity.Titulo;
 import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.entity.enums.Recorrencia;
 import com.projeto.financeiro.entity.enums.TipoTitulo;
+import com.projeto.financeiro.security.TextSanitizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,8 +27,9 @@ class TituloMapperTest {
 
     @BeforeEach
     void setUp() {
-        centroDeCustoMapper = new CentroDeCustoMapper();
-        mapper = new TituloMapper(centroDeCustoMapper);
+        TextSanitizer textSanitizer = new TextSanitizer();
+        centroDeCustoMapper = new CentroDeCustoMapper(textSanitizer);
+        mapper = new TituloMapper(centroDeCustoMapper, textSanitizer);
 
         usuario = new Usuario();
         usuario.setId(1L);

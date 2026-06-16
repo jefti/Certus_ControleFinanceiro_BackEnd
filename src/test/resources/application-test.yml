@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:certus-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  flyway:
+    enabled: false
+
+auth:
+  jwt:
+    secret: chave-secreta-de-testes-com-mais-de-32-caracteres
+    expiration: 3600000
+
+app:
+  actuator:
+    username: actuator-test
+    password: actuator-test
+  mail:
+    from: teste@certus.local
+    resend:
+      api-key: chave-resend-teste
+      base-url: http://localhost
+  password-recovery:
+    expiration-minutes: 15
+
+management:
+  server:
+    port: 0

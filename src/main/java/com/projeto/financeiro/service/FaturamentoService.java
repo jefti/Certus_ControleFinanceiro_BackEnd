@@ -8,6 +8,7 @@ import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.exception.BadRequestException;
 import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.FaturamentoRepository;
+import com.projeto.financeiro.security.TextSanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ public class FaturamentoService {
 
     private final FaturamentoRepository faturamentoRepository;
     private final FaturamentoMapper faturamentoMapper;
+    private final TextSanitizer textSanitizer;
 
     @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
@@ -62,7 +64,7 @@ public class FaturamentoService {
         faturamento.setDataPagamento(dataPagamento);
 
         if (request != null && request.observacao() != null && !request.observacao().isBlank()) {
-            faturamento.setObservacao(request.observacao());
+            faturamento.setObservacao(textSanitizer.sanitize(request.observacao()));
         }
 
         return faturamentoMapper.toDto(faturamentoRepository.save(faturamento));
