@@ -1,8 +1,10 @@
 package com.projeto.financeiro.entity;
 
+import com.projeto.financeiro.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -35,12 +37,22 @@ public class Usuario implements UserDetails {
 
     private Instant dataInativacao;
 
+    @Builder.Default
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion = 0;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role = Role.USER;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Titulo> titulos;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Role papel = (role == null) ? Role.USER : role;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + papel.name()));
     }
 
     @Override
