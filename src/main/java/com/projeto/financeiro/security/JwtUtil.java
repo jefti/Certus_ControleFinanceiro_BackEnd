@@ -14,6 +14,8 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -22,6 +24,10 @@ public class JwtUtil {
     private String jwtSecret;
     @Value("${auth.jwt.expiration}")
     private Long jwtExpirationMs;
+    @Value("${auth.jwt.issuer}")
+    private String jwtIssuer;
+    @Value("${auth.jwt.audience}")
+    private String jwtAudience;
 
     @PostConstruct
     public void validateJwtSecret() {
@@ -38,14 +44,18 @@ public class JwtUtil {
 
             // Gerar o token JWT usando a biblioteca JJWT
             return Jwts.builder()
-                    .subject((usuario.getEmail()))
-                    .expiration(dataExpircao)
+                    .id(UUID.randomUUID().toString())
+                    .subject(usuario.getEmail())
+                    .issuer(jwtIssuer)
+                    .audience().add(jwtAudience).and()
+                    .claim("tv", usuario.getTokenVersion())
                     .issuedAt(new Date())
+                    .expiration(dataExpircao)
                     .signWith(secretKey)
                     .compact();
         } catch (Exception e) {
-            log.warn("Erro ao gerar token JWT", e);
-            return "";
+            log.error("Erro ao gerar token JWT", e);
+            throw new IllegalStateException("Falha ao gerar token JWT", e);
         }
     }
 
@@ -53,11 +63,19 @@ public class JwtUtil {
     private Claims getClaims(String token){
         try {
             SecretKey secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
+                    .requireIssuer(jwtIssuer)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+
+            Set<String> audiences = claims.getAudience();
+            if (audiences == null || !audiences.contains(jwtAudience)) {
+                log.warn("Token JWT com audience invalida");
+                return null;
+            }
+            return claims;
 
         } catch (Exception e) {
             log.warn("Erro ao obter claims do token JWT", e);
@@ -68,6 +86,11 @@ public class JwtUtil {
     public String getUserName(String token) {
         Claims claims = getClaims(token);
         return claims != null ? claims.getSubject() : null;
+    }
+
+    public Integer getTokenVersion(String token) {
+        Claims claims = getClaims(token);
+        return claims != null ? claims.get("tv", Integer.class) : null;
     }
 
     public boolean isValidToken(String token){
