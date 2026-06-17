@@ -281,6 +281,9 @@ Após subir a aplicação, a documentação interativa fica disponível em:
 
 - 🧪 **Swagger UI:** http://localhost:8080/swagger-ui.html
 - 📜 **OpenAPI JSON:** http://localhost:8080/v3/api-docs
+- 📝 **Changelog do back-end:** [CHANGELOG.md](./CHANGELOG.md)
+- 📌 **Changelog geral do projeto:** [CHANGELOG_GERAL.md](./CHANGELOG_GERAL.md)
+- 📊 **Métricas consolidadas do projeto:** [METRICAS_PROJETO.md](./METRICAS_PROJETO.md)
 
 **Grupos de endpoints:**
 
