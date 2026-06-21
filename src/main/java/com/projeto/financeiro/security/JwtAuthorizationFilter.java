@@ -41,6 +41,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             if (!usuario.isEnabled()) {
                 return null;
             }
+            Integer tokenVersion = jwtUtil.getTokenVersion(token);
+            if (tokenVersion == null || tokenVersion != usuario.getTokenVersion()) {
+                return null;
+            }
             return new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
         }
         return null;

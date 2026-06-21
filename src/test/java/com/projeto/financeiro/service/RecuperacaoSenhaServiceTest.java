@@ -3,6 +3,7 @@ package com.projeto.financeiro.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +28,6 @@ import com.projeto.financeiro.entity.RecuperacaoSenha;
 import com.projeto.financeiro.entity.Usuario;
 import com.projeto.financeiro.exception.BadRequestException;
 import com.projeto.financeiro.exception.EmailDeliveryException;
-import com.projeto.financeiro.exception.NotFoundException;
 import com.projeto.financeiro.repository.RecuperacaoSenhaRepository;
 import com.projeto.financeiro.repository.UsuarioRepository;
 
@@ -55,12 +55,22 @@ class RecuperacaoSenhaServiceTest {
     }
 
     @Test
-    void shouldThrowNotFoundExceptionWhenEmailDoesNotExist() {
+    void shouldReturnNeutralMessageWhenEmailDoesNotExist() {
         ForgotPasswordRequest request = new ForgotPasswordRequest("missing@email.com");
 
         when(usuarioRepository.findByEmail(request.email())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> recuperacaoSenhaService.solicitarRecuperacao(request));
+        SimpleMessageResponse response = recuperacaoSenhaService.solicitarRecuperacao(request);
+
+        assertNotNull(response);
+        assertEquals(
+                "Se o email estiver cadastrado, um código de recuperação foi enviado.",
+                response.message());
+
+        verify(recuperacaoSenhaRepository, never()).save(org.mockito.ArgumentMatchers.any(RecuperacaoSenha.class));
+        verify(emailService, never()).enviarCodigoRecuperacao(
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
@@ -92,11 +102,91 @@ class RecuperacaoSenhaServiceTest {
 
         Usuario user = buildUser(1L, "john@email.com");
 
+        RecuperacaoSenha recovery = buildRecovery(
+                user,
+                "123456",
+                true,
+                LocalDateTime.now().minusMinutes(1),
+                LocalDateTime.now().plusMinutes(14),
+                null,
+                null);
+
         when(usuarioRepository.findByEmail(request.email())).thenReturn(Optional.of(user));
-        when(recuperacaoSenhaRepository.findByUsuarioAndCodigoAndAtivoTrue(user, request.codigo()))
-                .thenReturn(Optional.empty());
+        when(recuperacaoSenhaRepository.buscarAtivaPorUsuario(user))
+                .thenReturn(Optional.of(recovery));
 
         assertThrows(BadRequestException.class, () -> recuperacaoSenhaService.resetarSenha(request));
+
+        // Código errado conta tentativa, mas (1 < 5) o pedido continua ativo.
+        assertEquals(1, recovery.getTentativas());
+        assertEquals(true, recovery.getAtivo());
+        verify(recuperacaoSenhaRepository).save(recovery);
+    }
+
+    @Test
+    void shouldDeactivateRecoveryAfterReachingMaxAttempts() {
+        ResetPasswordRequest request = new ResetPasswordRequest(
+                "john@email.com",
+                "999999",
+                "newPassword123");
+
+        Usuario user = buildUser(1L, "john@email.com");
+
+        RecuperacaoSenha recovery = buildRecovery(
+                user,
+                "123456",
+                true,
+                LocalDateTime.now().minusMinutes(1),
+                LocalDateTime.now().plusMinutes(14),
+                null,
+                null);
+        recovery.setTentativas(4);
+
+        when(usuarioRepository.findByEmail(request.email())).thenReturn(Optional.of(user));
+        when(recuperacaoSenhaRepository.buscarAtivaPorUsuario(user))
+                .thenReturn(Optional.of(recovery));
+
+        assertThrows(BadRequestException.class, () -> recuperacaoSenhaService.resetarSenha(request));
+
+        // A 5ª tentativa errada invalida o pedido.
+        assertEquals(5, recovery.getTentativas());
+        assertEquals(false, recovery.getAtivo());
+        assertNotNull(recovery.getDataInativacao());
+        verify(recuperacaoSenhaRepository).save(recovery);
+    }
+
+    @Test
+    void shouldResetPasswordSuccessfullyWhenCodeIsValid() {
+        ResetPasswordRequest request = new ResetPasswordRequest(
+                "john@email.com",
+                "123456",
+                "newPassword123");
+
+        Usuario user = buildUser(1L, "john@email.com");
+
+        RecuperacaoSenha recovery = buildRecovery(
+                user,
+                "123456",
+                true,
+                LocalDateTime.now().minusMinutes(1),
+                LocalDateTime.now().plusMinutes(14),
+                null,
+                null);
+
+        when(usuarioRepository.findByEmail(request.email())).thenReturn(Optional.of(user));
+        when(recuperacaoSenhaRepository.buscarAtivaPorUsuario(user))
+                .thenReturn(Optional.of(recovery));
+        when(passwordEncoder.encode("newPassword123")).thenReturn("encoded-new");
+
+        SimpleMessageResponse response = recuperacaoSenhaService.resetarSenha(request);
+
+        assertEquals("Senha redefinida com sucesso.", response.message());
+        assertEquals("encoded-new", user.getSenha());
+        assertEquals(1, user.getTokenVersion());
+        assertEquals(false, recovery.getAtivo());
+        assertNotNull(recovery.getDataUtilizacao());
+        verify(usuarioRepository).save(user);
+        verify(recuperacaoSenhaRepository).save(recovery);
     }
 
     @Test
@@ -118,7 +208,7 @@ class RecuperacaoSenhaServiceTest {
                 null);
 
         when(usuarioRepository.findByEmail(request.email())).thenReturn(Optional.of(user));
-        when(recuperacaoSenhaRepository.findByUsuarioAndCodigoAndAtivoTrue(user, request.codigo()))
+        when(recuperacaoSenhaRepository.buscarAtivaPorUsuario(user))
                 .thenReturn(Optional.of(recovery));
 
         assertThrows(BadRequestException.class, () -> recuperacaoSenhaService.resetarSenha(request));

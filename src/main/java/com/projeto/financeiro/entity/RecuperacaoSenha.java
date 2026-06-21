@@ -29,6 +29,10 @@ public class RecuperacaoSenha {
     private Boolean ativo;
 
     @Column(nullable = false)
+    @Builder.Default
+    private Integer tentativas = 0;
+
+    @Column(nullable = false)
     private LocalDateTime dataCriacao;
 
     @Column(nullable = false)

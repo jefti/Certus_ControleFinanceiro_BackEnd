@@ -8,9 +8,6 @@ public record CentroDeCustoValorResponse(
 ) { }
 
 /*
-Foi criado para só passar qual Centro de Custo e o valor, e não detalhar.
-Usado para a Dashboard.
-
 O valor e a SOMA do valor CHEIO dos faturamentos a pagar em aberto de cada
 centro de custo. Se um titulo estiver vinculado a varios centros de custo,
 o valor integral e contabilizado em cada um deles (sem rateio).

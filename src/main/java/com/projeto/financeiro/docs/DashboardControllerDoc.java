@@ -12,6 +12,7 @@ import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(
         name = "Dashboard",
@@ -34,6 +35,23 @@ public interface DashboardControllerDoc {
             description = "Nao autenticado"
     )
     ResponseEntity<DashboardResponse> obter(
+            @RequestParam LocalDate periodoInicial,
+            @RequestParam LocalDate periodoFinal
+    );
+
+    @Operation(
+            summary = "Exportar dashboard em Excel",
+            description = "Gera um arquivo .xlsx com 4 abas: Resumo, Fluxo de Caixa, Centros de Custo (com títulos agrupados) e Lançamentos detalhados. Valores positivos em verde, negativos em vermelho.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Arquivo Excel gerado com sucesso",
+            content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    )
+    @ApiResponse(responseCode = "401", description = "Nao autenticado")
+    @GetMapping("/export")
+    ResponseEntity<byte[]> exportar(
             @RequestParam LocalDate periodoInicial,
             @RequestParam LocalDate periodoFinal
     );

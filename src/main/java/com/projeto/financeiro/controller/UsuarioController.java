@@ -1,7 +1,8 @@
 package com.projeto.financeiro.controller;
 
 import com.projeto.financeiro.docs.UsuarioControllerDoc;
-import com.projeto.financeiro.dto.request.UsuarioRequest;
+import com.projeto.financeiro.dto.request.UsuarioCreateRequest;
+import com.projeto.financeiro.dto.request.UsuarioUpdateRequest;
 import com.projeto.financeiro.dto.response.UsuarioResponse;
 import com.projeto.financeiro.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/usuarios")
@@ -19,30 +18,25 @@ public class UsuarioController implements UsuarioControllerDoc {
     private final UsuarioService usuarioService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody UsuarioCreateRequest usuarioRequest) {
         UsuarioResponse usuario = usuarioService.criar(usuarioRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuario);
     }
 
-    @GetMapping("/obter")
-    public ResponseEntity<List<UsuarioResponse>> obterTodos() {
-        return ResponseEntity.ok(usuarioService.listarTodos());
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponse> obterMeuPerfil() {
+        return ResponseEntity.ok(usuarioService.buscarMeuPerfil());
     }
 
-    @GetMapping("/obter/{id}")
-    public ResponseEntity<UsuarioResponse> obterPorId(@PathVariable long id) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    @PutMapping("/me")
+    public ResponseEntity<UsuarioResponse> atualizar(@Valid @RequestBody UsuarioUpdateRequest usuarioRequest) {
+        return ResponseEntity.ok(usuarioService.atualizar(usuarioRequest));
     }
 
-    @PutMapping("/atualizar/{id}")
-    public ResponseEntity<UsuarioResponse> atualizar(@PathVariable long id, @Valid @RequestBody UsuarioRequest usuarioRequest) {
-        return ResponseEntity.ok(usuarioService.atualizar(id, usuarioRequest));
-    }
-
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable long id) {
-        usuarioService.inativar(id);
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deletar() {
+        usuarioService.inativar();
         return ResponseEntity.noContent().build();
     }
 }

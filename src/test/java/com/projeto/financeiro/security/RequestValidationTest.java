@@ -1,7 +1,7 @@
 package com.projeto.financeiro.security;
 
 import com.projeto.financeiro.dto.request.ResetPasswordRequest;
-import com.projeto.financeiro.dto.request.UsuarioRequest;
+import com.projeto.financeiro.dto.request.UsuarioCreateRequest;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ class RequestValidationTest {
 
     @Test
     void shouldRejectInvalidUserForm() {
-        UsuarioRequest request = new UsuarioRequest("", "email-invalido", "123", "telefone");
+        UsuarioCreateRequest request = new UsuarioCreateRequest("", "email-invalido", "123", "telefone");
 
         assertFalse(validator.validate(request).isEmpty());
     }

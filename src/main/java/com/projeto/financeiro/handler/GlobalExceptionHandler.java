@@ -6,6 +6,7 @@ import com.projeto.financeiro.exception.ConflictException;
 import com.projeto.financeiro.exception.EmailDeliveryException;
 import com.projeto.financeiro.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -57,10 +59,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
-    // Para fins de log no console
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
-        ex.printStackTrace();
+        log.error("Erro inesperado em {}", request.getRequestURI(), ex);
         ApiError error = new ApiError(
                 LocalDateTime.now().format(formatter),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
